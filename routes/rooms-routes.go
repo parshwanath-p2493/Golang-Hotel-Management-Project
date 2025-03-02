@@ -10,5 +10,7 @@ func RoomsRoutes(c *fiber.App) {
 	{
 		rooms.Get("/all", controllers.GetAllRooms()) //accessable for all
 
+		//acceseble for admin and managers
+
 	}
 }
