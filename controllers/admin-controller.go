@@ -19,7 +19,7 @@ func SignUpAdmin(c *fiber.Ctx) error {
 	var admin models.Admin
 	collection := database.OpenCollection("Admin")
 
-	if err := c.BodyParser(&admin); err != nil {
+	if err := c.BodyParser(&admin); err != nil {	
 		// Handle error during adding
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Invalid request body"))
 	}

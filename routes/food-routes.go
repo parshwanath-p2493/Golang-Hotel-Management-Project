@@ -13,3 +13,4 @@ func FoodRoutes(c *fiber.App) {
 	c.Patch("/food/:category_name/:food_name", controllers.ChangeFood)
 	c.Delete("/food/:category_name/:food_name", controllers.DeleteFood)
 }
+	

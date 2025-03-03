@@ -9,6 +9,7 @@ import (
 	"github.com/parshwanath-p2493/Project/database"
 	"github.com/parshwanath-p2493/Project/models"
 	"github.com/parshwanath-p2493/Project/utils"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -34,7 +35,9 @@ func GuestLogin(c *fiber.Ctx) error {
 }
 func GetAllGuest(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 	var guest []models.Guest
+	defer cancel()
 	collection := database.OpenCollection("Guest")
+	result,err:=collection.Find(ctx,bson.M{})
+	
 }
