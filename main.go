@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/parshwanath-p2493/Project/database"
+	"github.com/parshwanath-p2493/Project/routes"
 )
 
 func main() {
@@ -25,6 +26,6 @@ func main() {
 		fmt.Println("THE SERVER IS ALL SET GO ")
 		return c.JSON(&fiber.Map{"message": "SERVER RUNNING in PORT : " + PORT})
 	})
-
+	routes.AdminRoutes(r)
 	log.Fatal(r.Listen(":" + PORT))
 }

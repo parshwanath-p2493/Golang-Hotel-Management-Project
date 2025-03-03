@@ -12,7 +12,7 @@ type Food struct {
 	Item_name     string
 	Category_name string
 	Category_id   string
-	price         float64
+	Price         float64 `json:"price","omitempty" bson:"price","omitempty"`
 	created_time  time.Time
 	updated_time  time.Time
 }
