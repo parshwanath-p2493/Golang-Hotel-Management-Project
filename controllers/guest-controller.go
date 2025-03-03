@@ -35,9 +35,17 @@ func GuestLogin(c *fiber.Ctx) error {
 }
 func GetAllGuest(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	var guest []models.Guest
+	var guests []models.Guest
 	defer cancel()
 	collection := database.OpenCollection("Guest")
-	result,err:=collection.Find(ctx,bson.M{})
-	
+	result, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, err.Error()))
+	}
+	return c.Status(http.StatusOK).JSON(utils.Response(c, result))
+	defer result.Close(ctx)
+	if err := result.All(ctx, &guests); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed fetch data"))
+	}
+	return c.Status(http.StatusOK).JSON(utils.Response(c, guests))
 }
