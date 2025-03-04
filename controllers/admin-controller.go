@@ -19,7 +19,7 @@ func SignUpAdmin(c *fiber.Ctx) error {
 	var admin models.Admin
 	collection := database.OpenCollection("Admin")
 
-	if err := c.BodyParser(&admin); err != nil {	
+	if err := c.BodyParser(&admin); err != nil {
 		// Handle error during adding
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Invalid request body"))
 	}
@@ -36,5 +36,5 @@ func SignUpAdmin(c *fiber.Ctx) error {
 	}
 
 	// Return success response with the result of insertion
-	return c.Status(http.StatusCreated).JSON(utils.Response(c, result))
+	return c.Status(http.StatusCreated).JSON(utils.Response(c, result, "Operation completed successfully"))
 }

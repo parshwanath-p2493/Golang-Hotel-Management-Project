@@ -26,6 +26,15 @@ func main() {
 		fmt.Println("THE SERVER IS ALL SET GO ")
 		return c.JSON(&fiber.Map{"message": "SERVER RUNNING in PORT : " + PORT})
 	})
+
 	routes.AdminRoutes(r)
+	routes.FoodRoutes(r)
+	routes.GuestRoutes(r)
+	routes.ManagerRoutes(r)
+	routes.RoomsRoutes(r)
+	routes.StaffRoutes(r)
+
+	//We need to call  all routes before starting the server else it will be error
 	log.Fatal(r.Listen(":" + PORT))
+
 }
