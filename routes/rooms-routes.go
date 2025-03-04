@@ -8,8 +8,8 @@ import (
 func RoomsRoutes(c *fiber.App) {
 	rooms := c.Group("/rooms")
 	{
-		rooms.Get("/all", controllers.GetAllRooms()) //accessable for all
-
+		rooms.Get("/all", controllers.GetAllRooms) //accessable for all
+		rooms.Get("/types", controllers.FilterRooms)
 		//acceseble for admin and managers
 
 	}

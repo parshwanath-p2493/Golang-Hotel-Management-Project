@@ -52,7 +52,8 @@ func GetFood(c *fiber.Ctx) error {
 		SortOrder = 1
 	}
 	sort := bson.M{"price": SortOrder}
-	cursor, err := database.OpenCollection("Food").Find(ctx, filter, options.Find().
+	collection := database.OpenCollection("Food")
+	cursor, err := collection.Find(ctx, filter, options.Find().
 		SetSort(sort).
 		SetSkip(int64((page-1)*limit)).
 		SetLimit(int64(limit)))

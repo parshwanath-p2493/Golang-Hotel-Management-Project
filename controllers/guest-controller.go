@@ -30,9 +30,10 @@ func GuestSignup(c *fiber.Ctx) error {
 	}
 	return c.Status(http.StatusOK).JSON(utils.Response(c, result))
 }
-func GuestLogin(c *fiber.Ctx) error {
-	return c.Status(http.StatusOK)
-}
+
+//	func GuestLogin(c *fiber.Ctx) error {
+//		return c.Status(http.StatusOK)
+//	}
 func GetAllGuest(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var guests []models.Guest
