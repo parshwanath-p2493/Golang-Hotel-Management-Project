@@ -15,20 +15,20 @@ import (
 )
 
 func AddFood(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	var food models.Food
 	collection := database.OpenCollection("Food")
 	if err := c.BodyParser(&food); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "err"))
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 	food.ID = primitive.NewObjectID()
 	food.Food_id = food.ID.Hex()
 	result, err := collection.InsertOne(ctx, food)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "err"))
 	}
-	return c.Status(http.StatusCreated).JSON(utils.Response(c, result))
+	return c.Status(http.StatusCreated).JSON(utils.Response(c, result, "Operation completed successfully"))
 }
 
 func GetFood(c *fiber.Ctx) error {
@@ -64,7 +64,7 @@ func GetFood(c *fiber.Ctx) error {
 	if err := cursor.All(ctx, &food); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, err.Error()))
 	}
-	return c.Status(http.StatusOK).JSON(utils.Response(c, food))
+	return c.Status(http.StatusOK).JSON(utils.Response(c, food, "Operation completed successfully"))
 }
 func ChangeFood(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -96,7 +96,7 @@ func ChangeFood(c *fiber.Ctx) error {
 	if result.MatchedCount == 0 {
 		return c.Status(http.StatusNotFound).JSON(utils.Error(c, utils.NotFound, "Food Item Not Found"))
 	}
-	return c.Status(http.StatusOK).JSON(utils.Response(c, result))
+	return c.Status(http.StatusOK).JSON(utils.Response(c, result, "Operation completed successfully"))
 }
 
 func DeleteFood(c *fiber.Ctx) error {
@@ -114,6 +114,6 @@ func DeleteFood(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to Delete"))
 	}
-	return c.Status(http.StatusOK).JSON(utils.Response(c, result))
+	return c.Status(http.StatusOK).JSON(utils.Response(c, result, "Operation completed successfully"))
 
 }

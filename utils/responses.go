@@ -25,7 +25,10 @@ func Message(c *fiber.Ctx, message string) {
 	c.Set("Content-Type", "application/json")
 	c.JSON(fiber.Map{"message": message})
 }
-func Response(c *fiber.Ctx, data interface{}) fiber.Map {
-	c.Set("Content-Type", "apllication/json")
-	return fiber.Map{"data": data}
+func Response(c *fiber.Ctx, data interface{}, msg string) fiber.Map {
+	c.Set("Content-Type", "application/json")
+	//log.Print(msg)
+	return fiber.Map{"data": data,
+		"message": msg,
+	}
 }

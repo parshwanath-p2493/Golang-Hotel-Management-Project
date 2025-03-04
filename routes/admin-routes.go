@@ -7,6 +7,6 @@ import (
 
 func AdminRoutes(c *fiber.App) {
 	c.Post("/admin/signup", controllers.SignUpAdmin)
-	c.Get("/admin/login/:admin_id", controllers.LoginAdmin)
+	//c.Get("/admin/login/:admin_id", controllers.LoginAdmin)
 
 }

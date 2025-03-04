@@ -8,9 +8,9 @@ import (
 func ManagerRoutes(c *fiber.App) {
 	manager := c.Group("/manager")
 	{
-		manager.Post("/signup", controllers.GuestSignup())
-		manager.Post("/login", controllers.GuestLogin())
-
+		manager.Post("/signup", controllers.ManagerSignup)
+		//manager.Post("/login", controllers.ManagerLogin)
+		manager.Delete("/delete/:id", controllers.DeleteManager)
 		// guest.Get("/verify-email/confirm", controllers.VerifyGuest())
 		// guest.Get("/get/:id", middleware.Authentication(models.G_Acc), controllers.GetGuest())
 		// guest.Put("/update/:id", middleware.Authentication(models.G_Acc), controllers.UpdateGuestDetails())
