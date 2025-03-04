@@ -7,9 +7,12 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/parshwanath-p2493/Project/database"
+	"github.com/parshwanath-p2493/Project/helpers"
 	"github.com/parshwanath-p2493/Project/models"
 	"github.com/parshwanath-p2493/Project/utils"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func SignUpAdmin(c *fiber.Ctx) error {
@@ -20,21 +23,61 @@ func SignUpAdmin(c *fiber.Ctx) error {
 	collection := database.OpenCollection("Admin")
 
 	if err := c.BodyParser(&admin); err != nil {
-		// Handle error during adding
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Invalid request body"))
 	}
+	hashedPassword, err := helpers.HashPassword(admin.Password)
+	if err != nil {
+		utils.Error(c, utils.InternalServerError, "Cant generate the password")
+	}
+	admin.Password = hashedPassword
 
 	// Generate a new ObjectID for the admin
 	admin.ID = primitive.NewObjectID()
 	admin.Admin_id = admin.ID.Hex()
+	admin.Role = "ADMIN"
+	//admin.created_time = time.Now()
+	admin.Created_time = time.Now()
 
-	// Insert the admin document into the database
+	token, err := helpers.GenerateToken(admin.First_name, admin.Email, admin.Role)
+	if err != nil {
+		// Handle error during token generation
+		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to generate token"))
+	}
+	admin.Token = token
 	result, err := collection.InsertOne(ctx, admin)
 	if err != nil {
 		// Handle error during insertion
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Error inserting admin into database"))
 	}
 
-	// Return success response with the result of insertion
-	return c.Status(http.StatusCreated).JSON(utils.Response(c, result, "Operation completed successfully"))
+	return c.Status(http.StatusCreated).JSON(utils.Response(c, result, "Added successfully"))
+}
+func LoginAdmin(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var admin models.Admin
+	var input models.Admin
+	collection := database.OpenCollection("Admin")
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Invalid request body"))
+	}
+	err := collection.FindOne(ctx, bson.M{"email": input.Email}).Decode(&admin)
+	if err == mongo.ErrNilDocument {
+		c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Invalid  "))
+	}
+	// if _, err := helpers.VerifyPassword(input.Password, admin.Password); err != nil {
+	// 	c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Invalid  Password"))
+	// }
+
+	_, err = helpers.VerifyPassword(input.Password, admin.Password)
+	if err != nil {
+		// Handle incorrect password
+		return c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Invalid credentials"))
+	}
+	token, err := helpers.GenerateToken(admin.First_name, admin.Email, admin.Role)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to generate token"))
+	}
+	return c.Status(http.StatusOK).JSON(utils.Response(c, token, "Successfuly Logged IN "))
 }

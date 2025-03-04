@@ -22,6 +22,7 @@ func AddRooms(c *fiber.Ctx) error {
 	if err := c.BodyParser(&room); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Invalid synatx"))
 	}
+
 	room.ID = primitive.NewObjectID()
 	room.Room_id = room.ID.Hex()
 	result, err := collection.InsertOne(ctx, room)
