@@ -24,6 +24,7 @@ func AddFood(c *fiber.Ctx) error {
 	}
 	food.ID = primitive.NewObjectID()
 	food.Food_id = food.ID.Hex()
+	food.Created_time = time.Now()
 	result, err := collection.InsertOne(ctx, food)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "err"))
@@ -77,7 +78,7 @@ func ChangeFood(c *fiber.Ctx) error {
 	}
 	filter := bson.M{
 		"category_name": CategoryName,
-		"food_name":     FoodName,
+		"item_name":     FoodName,
 	}
 	// update object with the fields that can be changed
 	update := bson.M{
@@ -89,6 +90,7 @@ func ChangeFood(c *fiber.Ctx) error {
 		},
 	}
 	collection := database.OpenCollection("Food")
+	UpdateFood.Updated_time = time.Now()
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to UPDATE"))
@@ -107,13 +109,16 @@ func DeleteFood(c *fiber.Ctx) error {
 	//var DeleteFood models.Food
 	filter := bson.M{
 		"category_name": CategoryName,
-		"food_name":     FoodName,
+		"item_name":     FoodName,
 	}
 	collection := database.OpenCollection("Food")
 	result, err := collection.DeleteOne(ctx, filter)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to Delete"))
 	}
-	return c.Status(http.StatusOK).JSON(utils.Response(c, result, "Operation completed successfully"))
+	if result.DeletedCount < 1 {
+		return c.Status(http.StatusNotFound).JSON(utils.Error(c, utils.NotFound, "Data not Found"))
+	}
+	return c.Status(http.StatusOK).JSON(utils.Response(c, result, "Item Deleted successfully"))
 
 }

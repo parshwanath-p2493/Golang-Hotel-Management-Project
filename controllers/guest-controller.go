@@ -23,6 +23,7 @@ func GuestSignup(c *fiber.Ctx) error {
 	}
 	guest.ID = primitive.NewObjectID()
 	guest.Guest_id = guest.ID.Hex()
+	guest.Created_time = time.Now()
 
 	result, err := collection.InsertOne(ctx, guest)
 	if err != nil {
@@ -43,10 +44,10 @@ func GetAllGuest(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, err.Error()))
 	}
-	return c.Status(http.StatusOK).JSON(utils.Response(c, result, "Operation completed successfully"))
+	//return c.Status(http.StatusOK).JSON(utils.Response(c, result, "Operation completed successfully"))
 	defer result.Close(ctx)
 	if err := result.All(ctx, &guests); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed fetch data"))
 	}
-	return c.Status(http.StatusOK).JSON(utils.Response(c, guests, "Operation completed successfully"))
+	return c.Status(http.StatusOK).JSON(utils.Response(c, guests, "Guest Data and details fetched successfully"))
 }

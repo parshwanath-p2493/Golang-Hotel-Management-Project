@@ -99,7 +99,7 @@ func ConnectDB() *mongo.Client {
 
 	// Get MongoDB URI from environment variable
 	uri := os.Getenv("DB_URI")
-
+	fmt.Println(uri)
 	// Set up a timeout context for the MongoDB connection
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

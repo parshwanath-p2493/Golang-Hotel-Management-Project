@@ -38,7 +38,7 @@ func SignUpAdmin(c *fiber.Ctx) error {
 	//admin.created_time = time.Now()
 	admin.Created_time = time.Now()
 
-	token, err := helpers.GenerateToken(admin.First_name, admin.Email, admin.Role)
+	token, err := helpers.GenerateToken(admin.First_name, admin.Email, admin.Role, "")
 	if err != nil {
 		// Handle error during token generation
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to generate token"))
@@ -49,8 +49,16 @@ func SignUpAdmin(c *fiber.Ctx) error {
 		// Handle error during insertion
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Error inserting admin into database"))
 	}
+	// fiber.Map={utils.Message(c,token)}
+	// return c.Status(http.StatusCreated).JSON(utils.Response(c, result, "Added successfully"))
 
-	return c.Status(http.StatusCreated).JSON(utils.Response(c, result, "Added successfully"))
+	response := fiber.Map{
+		"message": token,                                                   // From utils.Message (you can adjust this as needed)
+		"data":    utils.Response(c, result, "Added successfully")["data"], // Get "data" from utils.Response
+	}
+
+	return c.Status(http.StatusCreated).JSON(response)
+
 }
 func LoginAdmin(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -64,7 +72,9 @@ func LoginAdmin(c *fiber.Ctx) error {
 	}
 	err := collection.FindOne(ctx, bson.M{"email": input.Email}).Decode(&admin)
 	if err == mongo.ErrNilDocument {
-		c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Invalid  "))
+		return c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Invalid  "))
+	} else if err != nil {
+		return c.Status(http.StatusNotFound).JSON(utils.Error(c, utils.NotFound, "Error fetching Admin from database  "))
 	}
 	// if _, err := helpers.VerifyPassword(input.Password, admin.Password); err != nil {
 	// 	c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Invalid  Password"))
@@ -75,7 +85,7 @@ func LoginAdmin(c *fiber.Ctx) error {
 		// Handle incorrect password
 		return c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Invalid credentials"))
 	}
-	token, err := helpers.GenerateToken(admin.First_name, admin.Email, admin.Role)
+	token, err := helpers.GenerateToken(admin.First_name, admin.Email, admin.Role, "")
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to generate token"))
 	}

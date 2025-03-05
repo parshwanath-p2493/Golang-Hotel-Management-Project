@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -31,12 +33,41 @@ func AddRooms(c *fiber.Ctx) error {
 	}
 	return c.Status(http.StatusOK).JSON(utils.Response(c, result, "Operation completed successfully"))
 }
+func DeleteRoom(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	RoomNumber := c.Params("room_number")
+	// filter := bson.M{
+	// 	"room_number": RoomNumber}
+
+	roomNumberInt, err := strconv.ParseInt(RoomNumber, 10, 32)
+	if err != nil {
+		// If conversion fails, return a bad request response
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Invalid room number format"))
+	}
+
+	// Build the filter to match the room_number in the database
+	filter := bson.M{
+		"room_number": int32(roomNumberInt), // Convert to int32 to match the MongoDB schema
+	}
+	fmt.Println("Filter:", filter)
+
+	collection := database.OpenCollection("Rooms")
+	result, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Unable to delete"))
+	}
+	if result.DeletedCount < 1 {
+		return c.Status(http.StatusNotFound).JSON(utils.Error(c, utils.NotFound, "Room number in incorrect"))
+	}
+	return c.Status(http.StatusOK).JSON(utils.Response(c, result, "Deleted Succssfuly"))
+}
 func GetAllRooms(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var rooms []models.Rooms
 	collection := database.OpenCollection("Rooms")
-	result, err := collection.Find(ctx, rooms)
+	result, err := collection.Find(ctx, bson.M{})
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Error"))
 	}

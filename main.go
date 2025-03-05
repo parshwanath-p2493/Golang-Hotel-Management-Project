@@ -21,7 +21,8 @@ func main() {
 	//r.Run(":" + PORT)
 	//r.Run(":" + PORT)
 	r := fiber.New()
-
+	a := os.Getenv("XYZ")
+	fmt.Println(a)
 	r.Get("/", func(c *fiber.Ctx) error {
 		fmt.Println("THE SERVER IS ALL SET GO ")
 		return c.JSON(&fiber.Map{"message": "SERVER RUNNING in PORT : " + PORT})

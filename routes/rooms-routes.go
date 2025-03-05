@@ -3,14 +3,20 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/parshwanath-p2493/Project/controllers"
+	"github.com/parshwanath-p2493/Project/middleware"
 )
 
 func RoomsRoutes(c *fiber.App) {
 	rooms := c.Group("/rooms")
 	{
 		rooms.Get("/all", controllers.GetAllRooms) //accessable for all
-		rooms.Get("/types", controllers.FilterRooms)
+		rooms.Get("/types/:capacity/:room_type", controllers.FilterRooms)
 		//acceseble for admin and managers
-		rooms.Post("/addroom", controllers.AddRooms)
+
 	}
+}
+func RoomsRoutesAuth(c *fiber.App) {
+	rooms := c.Group("/rooms", middleware.AdminAuthentication, middleware.AdminAuthentication)
+	rooms.Post("/addroom", middleware.ManagerAuthentication, controllers.AddRooms)
+	rooms.Delete("/delete/:room_number", controllers.DeleteRoom)
 }
