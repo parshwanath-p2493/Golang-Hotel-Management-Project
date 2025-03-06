@@ -10,7 +10,7 @@ func ManagerRoutes(c *fiber.App) {
 	manager := c.Group("/manager", middleware.AdminAuthentication)
 	{
 		manager.Post("/signup", controllers.ManagerSignup)
-		c.Post("/login", controllers.ManagerLogin)
+		c.Post("/managerlogin", controllers.ManagerLogin)
 		manager.Delete("/delete/:id", controllers.DeleteManager)
 	}
 }
