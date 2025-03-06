@@ -72,7 +72,16 @@ func ManagerLogin(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Wrong Password"))
 	}
-	return c.Status(http.StatusOK).JSON(utils.Response(c, ExistedManager, "LOGIN SUCCESFULLY"))
+	token, err := helpers.GenerateToken(LoginManager.First_name, LoginManager.Email, LoginManager.Role, LoginManager.Department)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to generate token"))
+	}
+
+	response := fiber.Map{
+		"message": token,                                                             // From utils.Message (you can adjust this as needed)
+		"data":    utils.Response(c, ExistedManager, "Log in  successfully")["data"], // Get "data" from utils.Response
+	}
+	return c.Status(http.StatusOK).JSON(response)
 
 }
 

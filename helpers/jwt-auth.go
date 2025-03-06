@@ -42,7 +42,7 @@ func GenerateToken(name string, email string, role string, dept string) (string,
 	fmt.Println("Secret key", SECRET_KEY)
 	// Create token with claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims) //.SignedString([]byte(SECRET_KEY))
-	fmt.Printf("SECRET_KEY: %s", SECRET_KEY)
+	fmt.Printf("\n SECRET_KEY: %s \n ", SECRET_KEY)
 
 	signedToken, err := token.SignedString([]byte(SECRET_KEY))
 	if err != nil {

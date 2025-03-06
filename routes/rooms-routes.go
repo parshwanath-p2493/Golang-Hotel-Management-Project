@@ -16,7 +16,7 @@ func RoomsRoutes(c *fiber.App) {
 	}
 }
 func RoomsRoutesAuth(c *fiber.App) {
-	rooms := c.Group("/rooms", middleware.AdminAuthentication, middleware.AdminAuthentication)
+	rooms := c.Group("/rooms", middleware.AdminAuthentication)
 	rooms.Post("/addroom", middleware.ManagerAuthentication, controllers.AddRooms)
 	rooms.Delete("/delete/:room_number", controllers.DeleteRoom)
 }

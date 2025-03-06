@@ -7,7 +7,7 @@ import (
 )
 
 func StaffRoutes(c *fiber.App) {
-	staff := c.Group("/staff", middleware.AdminAuthentication)
+	staff := c.Group("/adminstaff", middleware.AdminAuthentication)
 	{
 		staff.Get("/getall", controllers.GetAllStaff)
 		staff.Post("/addstaff", controllers.AddStaff)
@@ -18,7 +18,7 @@ func StaffRoutes(c *fiber.App) {
 }
 
 func StaffRoutes2(c *fiber.App) {
-	staff := c.Group("/staff", middleware.ManagerAuthentication)
+	staff := c.Group("/managerstaff", middleware.ManagerAuthentication)
 	{
 		staff.Get("/getall", controllers.GetAllStaff)
 		staff.Post("/addstaff", controllers.AddStaff)

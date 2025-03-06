@@ -23,7 +23,7 @@ func AdminRoutesAuth(app *fiber.App) {
 	admin.Post("/loginmanager", controllers.ManagerLogin)
 	admin.Delete("/delete/:id", controllers.DeleteManager)
 	admin.Get("/getallmanagers", controllers.GetManager)
-	admin.Get("/getall", controllers.GetAllStaff)
-	admin.Post("/addstaff", controllers.AddStaff)
+	admin.Get("/getallstaff", controllers.GetAllStaff)
+	//admin.Post("/addstaff", controllers.AddStaff)
 
 }

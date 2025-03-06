@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -40,12 +41,31 @@ func AddStaff(c *fiber.Ctx) error {
 	var staff models.Staff
 	collection := database.OpenCollection("Staff")
 
-	managerDepartment := c.Locals("department").(string)
-
 	if err := c.BodyParser(&staff); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, err.Error()))
 	}
-	if staff.Department != managerDepartment {
+	// managerDepartment := c.Locals("department").(string)
+	// adminDepartment := c.Locals("role").(string)
+
+	// Safe type assertion for department and role
+	managerDepartment, ok := c.Locals("department").(string)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing department information"})
+	}
+
+	adminRole, ok := c.Locals("role").(string)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing role information"})
+	}
+
+	// If the user is a manager, they can only add staff to their own department
+	// If the user is an admin, they can add staff to any department
+
+	if adminRole != "ADMIN" && staff.Department != managerDepartment {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "Managers can only add staff to their own department"})
+	}
+	if staff.Department != managerDepartment && adminRole != "ADMIN" {
+		fmt.Println("MANAGER OF DIFFERENT DEPARTMENT NOT ALLOWED and Admin May be Wrong")
 		log.Fatal("MANAGER OF DIFFERENT DEPARTMENT NOT ALLOWED")
 		//return exit(0)
 	}

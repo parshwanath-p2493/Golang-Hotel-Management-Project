@@ -34,7 +34,11 @@ func main() {
 	routes.ManagerRoutes(r)
 	routes.RoomsRoutes(r)
 	routes.StaffRoutes(r)
-
+	routes.AdminRoutesAuth(r)
+	routes.FoodRoutes2(r)
+	routes.GuestRoutes2(r)
+	routes.StaffRoutes2(r)
+	routes.RoomsRoutesAuth(r)
 	//We need to call  all routes before starting the server else it will be error
 	log.Fatal(r.Listen(":" + PORT))
 
