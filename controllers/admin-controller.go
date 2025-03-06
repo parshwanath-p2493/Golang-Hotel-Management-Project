@@ -53,8 +53,8 @@ func SignUpAdmin(c *fiber.Ctx) error {
 	// return c.Status(http.StatusCreated).JSON(utils.Response(c, result, "Added successfully"))
 
 	response := fiber.Map{
-		"message": token,                                                   // From utils.Message (you can adjust this as needed)
-		"data":    utils.Response(c, result, "Added successfully")["data"], // Get "data" from utils.Response
+		"message": token,
+		"data":    utils.Response(c, result, "Added successfully")["data"],
 	}
 
 	return c.Status(http.StatusCreated).JSON(response)
