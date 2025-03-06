@@ -31,7 +31,6 @@ func SignUpAdmin(c *fiber.Ctx) error {
 	}
 	admin.Password = hashedPassword
 
-	// Generate a new ObjectID for the admin
 	admin.ID = primitive.NewObjectID()
 	admin.Admin_id = admin.ID.Hex()
 	admin.Role = "ADMIN"
