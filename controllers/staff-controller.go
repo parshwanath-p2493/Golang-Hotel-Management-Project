@@ -20,12 +20,12 @@ func GetAllStaff(c *fiber.Ctx) error {
 	defer cancel()
 	collection := database.OpenCollection("Staff")
 
-	managerDepartment := c.Locals("department").(string)
+	//managerDepartment := c.Locals("department").(string)
 	//admin := c.Locals("role").(string)
-	filter := bson.M{"department": managerDepartment}
+	//filter := bson.M{"department": managerDepartment}
 
 	var staff []models.Staff
-	result, err := collection.Find(ctx, filter)
+	result, err := collection.Find(ctx, bson.M{})
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Error in fetching data"))
 	}

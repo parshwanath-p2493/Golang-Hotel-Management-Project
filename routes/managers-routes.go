@@ -7,10 +7,9 @@ import (
 )
 
 func ManagerRoutes(c *fiber.App) {
-	manager := c.Group("/manager", middleware.AdminAuthentication)
+	manager := c.Group("/manager", middleware.ManagerAuthentication)
 	{
 		manager.Post("/signup", controllers.ManagerSignup)
-		c.Post("/managerlogin", controllers.ManagerLogin)
 		manager.Delete("/delete/:id", controllers.DeleteManager)
 	}
 }

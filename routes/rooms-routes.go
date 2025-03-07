@@ -11,12 +11,16 @@ func RoomsRoutes(c *fiber.App) {
 	{
 		rooms.Get("/all", controllers.GetAllRooms) //accessable for all
 		rooms.Get("/types/:capacity/:room_type", controllers.FilterRooms)
-		//acceseble for admin and managers
 
 	}
 }
+
+//acceseble for admin and managers
+
 func RoomsRoutesAuth(c *fiber.App) {
 	rooms := c.Group("/rooms", middleware.AdminAuthentication)
-	rooms.Post("/addroom", middleware.ManagerAuthentication, controllers.AddRooms)
-	rooms.Delete("/delete/:room_number", controllers.DeleteRoom)
+	{
+		rooms.Post("/addroom", controllers.AddRooms)
+		rooms.Delete("/delete/:room_number", controllers.DeleteRoom)
+	}
 }

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
@@ -72,6 +73,7 @@ func ManagerLogin(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Wrong Password"))
 	}
+	log.Println("\n \n Password Matched Login Continue.... ")
 	token, err := helpers.GenerateToken(LoginManager.First_name, LoginManager.Email, LoginManager.Role, LoginManager.Department)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to generate token"))
