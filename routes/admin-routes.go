@@ -24,5 +24,4 @@ func AdminRoutesAuth(c *fiber.App) {
 		admin.Get("/getallstaff", controllers.GetAllStaff)
 		//admin.Post("/addstaff", controllers.AddStaff)
 	}
-
 }

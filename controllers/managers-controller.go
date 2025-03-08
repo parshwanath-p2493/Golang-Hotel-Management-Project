@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -74,6 +75,8 @@ func ManagerLogin(c *fiber.Ctx) error {
 		return c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Wrong Password"))
 	}
 	log.Println("\n \n Password Matched Login Continue.... ")
+	fmt.Println("\n \n ", LoginManager.Role, LoginManager.Department)
+
 	token, err := helpers.GenerateToken(LoginManager.First_name, LoginManager.Email, LoginManager.Role, LoginManager.Department)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to generate token"))
@@ -91,7 +94,7 @@ func DeleteManager(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	managerID := c.Params("id")
-	filter := bson.M{"id": managerID}
+	filter := bson.M{"manager_id": managerID}
 	collection := database.OpenCollection("Managers")
 	result, err := collection.DeleteOne(ctx, filter)
 	if err != nil {

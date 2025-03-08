@@ -15,7 +15,7 @@ var SECRET_KEY string = os.Getenv("SECRET_KEY")
 
 // func (allowedRoles ...string) fiber.Handler {
 func ManagerAuthentication(c *fiber.Ctx) error {
-	clientToken := c.Get("X-Auth-Token")
+	clientToken := c.Get("X-Auth-ManagerToken")
 	clientToken = strings.Replace(clientToken, "Bearer ", "", 1)
 	if clientToken == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -23,24 +23,30 @@ func ManagerAuthentication(c *fiber.Ctx) error {
 		})
 	}
 	// 	// Parse the token
+	log.Printf("SECRETKEY: %s", SECRET_KEY)
 
 	claims := &helpers.Info{}
 	_, err := jwt.ParseWithClaims(clientToken, claims, func(t *jwt.Token) (interface{}, error) {
 		return []byte(SECRET_KEY), nil
 	})
-	log.Printf("SECRETKEY: %s", SECRET_KEY)
+	fmt.Println("Role of from token:", claims.Role)
+	log.Println("Role from token:", claims.Role)
+	log.Println("Department from token:", claims.Department)
+
 	if err != nil {
 		log.Println("Error Parsing token", err)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "INVALID OR EXPIRED TOKEN"})
 	}
-
-	log.Println("Role from token:", claims.Role)
-	log.Println("Department from token:", claims.Department)
+	if err.Error() == "signature is invalid" {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Invalid Token Signature",
+		})
+	}
 
 	if claims.Role != "manager" && claims.Role != "Manager" && claims.Role != "MANAGER" {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "Access forbidden Only Manager Can access "})
 	}
-	c.Locals("department", claims.Department)
+	//c.Locals("department", claims.Department)
 	return c.Next()
 }
 
