@@ -75,9 +75,10 @@ func ManagerLogin(c *fiber.Ctx) error {
 		return c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Wrong Password"))
 	}
 	log.Println("\n \n Password Matched Login Continue.... ")
+	LoginManager.Role = "Manager"
 	fmt.Println("\n \n ", LoginManager.Role, LoginManager.Department)
 
-	token, err := helpers.GenerateToken(LoginManager.First_name, LoginManager.Email, LoginManager.Role, LoginManager.Department)
+	token, err := helpers.GenerateToken(ExistedManager.First_name, ExistedManager.Email, ExistedManager.Role, ExistedManager.Department)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to generate token"))
 	}

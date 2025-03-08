@@ -15,17 +15,34 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func GetAllStaff(c *fiber.Ctx) error {
+func GetAllStaff(c *fiber.Ctx) error { //Fetch all the details of the staff and details used for admin
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	collection := database.OpenCollection("Staff")
 
-	//managerDepartment := c.Locals("department").(string)
-	//admin := c.Locals("role").(string)
-	//filter := bson.M{"department": managerDepartment}
-
 	var staff []models.Staff
 	result, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Error in fetching data"))
+	}
+	defer result.Close(ctx)
+	if err := result.All(ctx, &staff); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Unable to fettch the data "))
+	}
+	return c.Status(http.StatusOK).JSON(utils.Response(c, staff, "The Staff details are:"))
+}
+
+func GetAllStaffDept(c *fiber.Ctx) error { //fetch only login manager dept staff details
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	collection := database.OpenCollection("Staff")
+
+	managerDepartment := c.Locals("department").(string)
+	//admin := c.Locals("role").(string)
+	filter := bson.M{"department": managerDepartment}
+
+	var staff []models.Staff
+	result, err := collection.Find(ctx, filter)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Error in fetching data"))
 	}

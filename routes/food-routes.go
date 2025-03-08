@@ -12,9 +12,9 @@ func FoodRoutes(c *fiber.App) {
 		//accessable for admins and managers
 		food.Post("/addfood", controllers.AddFood)
 		food.Get("/getall", controllers.GetFood)
+		food.Patch("/filter/:category_name/:food_name", controllers.ChangeFood)
+		food.Delete("/delete/:category_name/:food_name", controllers.DeleteFood)
 	}
-	c.Patch("/filter/:category_name/:food_name", controllers.ChangeFood)
-	c.Delete("/delete/:category_name/:food_name", controllers.DeleteFood)
 }
 func FoodRoutes2(c *fiber.App) {
 	food := c.Group("/managerfood", middleware.ManagerAuthentication)
@@ -22,7 +22,7 @@ func FoodRoutes2(c *fiber.App) {
 		//accessable for admins and managers
 		food.Post("/addfood", controllers.AddFood)
 		food.Get("/getall", controllers.GetFood)
+		food.Patch("/filter/:category_name/:food_name", controllers.ChangeFood)
+		food.Delete("/delete/:category_name/:food_name", controllers.DeleteFood)
 	}
-	c.Patch("/filter/:category_name/:food_name", controllers.ChangeFood)
-	c.Delete("/delete/:category_name/:food_name", controllers.DeleteFood)
 }
