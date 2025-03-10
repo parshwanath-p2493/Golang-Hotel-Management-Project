@@ -10,10 +10,10 @@ func StaffRoutes(c *fiber.App) {
 	staff := c.Group("/adminstaff", middleware.AdminAuthentication)
 	{
 		staff.Get("/getall", controllers.GetAllStaff)
-		staff.Post("/addstaff", controllers.AddStaff)
-		//staff.Get("/get/:staff_id", controllers.GetStaff)
-		staff.Put("/change/:staff_id", controllers.ChangeStaff)
-		staff.Delete("/delete/:staff_id", controllers.DeleteStaff)
+		// staff.Post("/addstaff", controllers.AddStaff)
+		// //staff.Get("/get/:staff_id", controllers.GetStaff)
+		// staff.Put("/change/:staff_id", controllers.ChangeStaff)
+		// staff.Delete("/delete/:staff_id", controllers.DeleteStaff)
 	}
 }
 

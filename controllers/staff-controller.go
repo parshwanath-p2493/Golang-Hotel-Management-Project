@@ -2,9 +2,8 @@ package controllers
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -57,39 +56,42 @@ func AddStaff(c *fiber.Ctx) error {
 	defer cancel()
 	var staff models.Staff
 	collection := database.OpenCollection("Staff")
+	managerDepartment := c.Locals("department").(string)
 
 	if err := c.BodyParser(&staff); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, err.Error()))
 	}
-	// managerDepartment := c.Locals("department").(string)
-	// adminDepartment := c.Locals("role").(string)
-
+	staffDepartment := strings.ToLower(staff.Department)
+	if managerDepartment != staffDepartment {
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Manager of different dep Cannot add the staff of other dept"))
+	}
 	// Safe type assertion for department and role
-	managerDepartment, ok := c.Locals("department").(string)
-	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing department information"})
-	}
+	// managerDepartment, ok := c.Locals("department").(string)
+	// if !ok {
+	// 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing department information"})
+	// }
 
-	adminRole, ok := c.Locals("role").(string)
-	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing role information"})
-	}
+	// adminRole, ok := c.Locals("role").(string)
+	// if !ok {
+	// 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing role information"})
+	// }
 
 	// If the user is a manager, they can only add staff to their own department
 	// If the user is an admin, they can add staff to any department
 
-	if adminRole != "ADMIN" && staff.Department != managerDepartment {
-		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "Managers can only add staff to their own department"})
-	}
-	if staff.Department != managerDepartment && adminRole != "ADMIN" {
-		fmt.Println("MANAGER OF DIFFERENT DEPARTMENT NOT ALLOWED and Admin May be Wrong")
-		log.Fatal("MANAGER OF DIFFERENT DEPARTMENT NOT ALLOWED")
-		//return exit(0)
-	}
+	// if adminRole != "ADMIN" && staff.Department != managerDepartment {
+	// 	return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "Managers can only add staff to their own department"})
+	// }
+	// if staff.Department != managerDepartment && adminRole != "ADMIN" {
+	// 	fmt.Println("MANAGER OF DIFFERENT DEPARTMENT NOT ALLOWED and Admin May be Wrong")
+	// 	log.Fatal("MANAGER OF DIFFERENT DEPARTMENT NOT ALLOWED")
+	// 	//return exit(0)
+	// }
 
 	staff.ID = primitive.NewObjectID()
 	staff.Staff_id = staff.ID.Hex()
 	staff.Created_time = time.Now()
+	staff.Role = "Staff"
 	result, err := collection.InsertOne(ctx, staff)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Syntax error"))
@@ -108,7 +110,11 @@ func ChangeStaff(c *fiber.Ctx) error {
 	if err := c.BodyParser(&updateStaff); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Invalid ID"))
 	}
-	filter := bson.M{"staff_id": staffID, "department": managerDepartment}
+	staffDepartment := strings.ToLower(updateStaff.Department)
+	if managerDepartment != staffDepartment {
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Manager of different dep Cannot add the staff of other dept"))
+	}
+	filter := bson.M{"staff_id": staffID}
 	update := bson.M{
 		"$set": bson.M{
 			"first_name":   updateStaff.First_name,
@@ -134,12 +140,23 @@ func ChangeStaff(c *fiber.Ctx) error {
 func DeleteStaff(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	//var staff_id models.Staff
-	staffID := c.BodyParser("staff_id")
-	managerDepartment := c.Locals("department").(string)
-
 	collection := database.OpenCollection("Staff")
-	filter := bson.M{"staff_id": staffID, "department": managerDepartment}
+	var staff []models.Staff
+	staffID := c.Params("staff_id")
+	filter := bson.M{"staff_id": staffID}
+
+	find, _ := collection.Find(ctx, filter)
+	defer find.Close(ctx)
+	s := find.All(ctx, &staff)
+	if s != nil {
+		return c.JSON(utils.Error(c, utils.BadRequest, s.Error()))
+	}
+	managerDepartment := c.Locals("department").(string)
+	staffDepartment := strings.ToLower(staff[0].Department)
+	if managerDepartment != staffDepartment {
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Manager of different dep Cannot add the staff of other dept"))
+	}
+
 	result, err := collection.DeleteOne(ctx, filter)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "ERROR"))
