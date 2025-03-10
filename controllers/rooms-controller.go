@@ -86,16 +86,46 @@ func FilterRooms(c *fiber.Ctx) error {
 	capacity := c.Query("capacity")
 	RoomType := c.Query("room_type")
 	sortByPrice := c.Query("sortByPrice")
+	minPrice := c.Query("min_price")
+	maxPrice := c.Query("max-price")
 	page := c.QueryInt("page", 1)
 	limit := c.QueryInt("limit", 5)
 	collection := database.OpenCollection("Rooms")
 	filter := bson.M{}
+
 	if RoomType != "" {
 		filter["room_type"] = RoomType
 	}
 	if capacity != "" {
 		filter["capacity"] = capacity
 	}
+	//Implementing Range of price in the Project for good user experience
+	if minPrice != "" || maxPrice != "" {
+		minPriceVal, maxPriceVal := 0.0, 0.0
+		var PriceFilter bson.M
+		if minPrice != "" {
+			minPriceVal, _ = strconv.ParseFloat(minPrice, 64)
+		}
+		if maxPrice != "" {
+			maxPriceVal, _ = strconv.ParseFloat(maxPrice, 64)
+		}
+		if minPrice != " " && maxPrice != "" {
+			PriceFilter = bson.M{
+				"$gte": minPriceVal,
+				"$lte": maxPriceVal,
+			}
+		} else if minPrice != "" {
+			PriceFilter = bson.M{
+				"$gtw": minPriceVal,
+			}
+		} else if maxPrice != "" {
+			PriceFilter = bson.M{
+				"$lte": maxPriceVal,
+			}
+		}
+		filter["price"] = PriceFilter
+	}
+
 	var SortOrder int
 	if sortByPrice == "asc" {
 		SortOrder = 1
