@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"log"
+	"net/http"
 	"os"
 	"strings"
 
@@ -23,7 +24,7 @@ func ManagerAuthentication(c *fiber.Ctx) error {
 	clientToken = strings.Replace(clientToken, "Bearer ", "", 1)
 	if clientToken == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Missing Token",
+			"error": "Missing Token Manager",
 		})
 	}
 
@@ -65,12 +66,14 @@ func AdminAuthentication(c *fiber.Ctx) error {
 	// if err != nil {
 	// 	log.Println("Unable load the seceret key")
 	// }
-	// var SECRET_KEY = os.Getenv("SECRET_KEY")        Noo need because we used Getenv in inline itself
+	// var SECRET_KEY = os.Getenv("SECRET_KEY")
+
+	//  Noo need because we used Getenv in inline itself
 	clientToken := c.Get("X-Auth-Token")
 	clientToken = strings.Replace(clientToken, "Bearer ", "", 1)
 	if clientToken == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Missing Token",
+			"error": "Missing Token of ADMIN",
 		})
 	}
 	// 	// Parse the token
@@ -94,6 +97,31 @@ func AdminAuthentication(c *fiber.Ctx) error {
 	}
 	//fmt.Print("\n \n")
 	//fmt.Println(claims.Role)
+	c.Locals("role", claims.Role)
+	return c.Next()
+
+}
+func GuestAuth(c *fiber.Ctx) error {
+	clientToken := c.Get("X-Auth-GuestToken")
+	clientToken = strings.Replace(clientToken, "Bearer", "", 1)
+	if clientToken == "" {
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Missing Token of Guest",
+		})
+	}
+	claims := helpers.Info{}
+	_, err := jwt.ParseWithClaims(clientToken, claims, func(t *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SERCET_KEY")), nil
+	})
+	if err != nil {
+		log.Println("Error Parsing token", err)
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Token is mismatched or Token is expired login again "})
+	}
+	log.Println("Name of the guest", claims.Name)
+	log.Println("Email of the guest:", claims.Email)
+	if claims.Role != "Guest" && claims.Role != "guest" && claims.Role != "GUEST" {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "Access forbidden Only Guest Can access "})
+	}
 	c.Locals("role", claims.Role)
 	return c.Next()
 

@@ -9,7 +9,6 @@ import (
 func GuestRoutes(c *fiber.App) {
 	guest := c.Group("/guestadmin", middleware.AdminAuthentication)
 	{
-		guest.Post("/signup", controllers.GuestSignup)
 		guest.Get("/getall", controllers.GetAllGuest)
 
 	}
@@ -17,7 +16,7 @@ func GuestRoutes(c *fiber.App) {
 func GuestRoutes2(c *fiber.App) {
 	guest := c.Group("/guestmanager", middleware.ManagerAuthentication)
 	{
-		guest.Post("/signup", controllers.GuestSignup)
+		//guest.Post("/signup", controllers.GuestSignup)
 		guest.Get("/getall", controllers.GetAllGuest)
 
 	}
