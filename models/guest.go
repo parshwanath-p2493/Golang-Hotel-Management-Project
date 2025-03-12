@@ -16,6 +16,7 @@ type Guest struct {
 	Email         string             `bson:"email,omitempty" json:"email,omitempty"`
 	Password      string             `bson:"password,omitempty" json:"password,omitempty"`
 	Gender        string             `bson:"gender,omitempty" json:"gender,omitempty"`
+	Token         string             `bson:"token,omitempty" json:"token,omitempty"`
 	Country       string             `bson:"country,omitempty" json:"country,omitempty"`
 	Created_time  time.Time          `bson:"created_time,omitempty" json:"created_time,omitempty"`
 	Updated_time  time.Time          `bson:"updated_time,omitempty" json:"updated_time,omitempty"`

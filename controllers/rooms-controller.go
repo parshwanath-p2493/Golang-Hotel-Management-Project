@@ -116,7 +116,7 @@ func FilterRooms(c *fiber.Ctx) error {
 			}
 		} else if minPrice != "" {
 			PriceFilter = bson.M{
-				"$gtw": minPriceVal,
+				"$gte": minPriceVal,
 			}
 		} else if maxPrice != "" {
 			PriceFilter = bson.M{

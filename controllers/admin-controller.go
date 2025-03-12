@@ -71,7 +71,7 @@ func LoginAdmin(c *fiber.Ctx) error {
 	}
 	err := collection.FindOne(ctx, bson.M{"email": input.Email}).Decode(&admin)
 	if err == mongo.ErrNilDocument {
-		return c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Invalid  "))
+		return c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Invalid Password or email  "))
 	} else if err != nil {
 		return c.Status(http.StatusNotFound).JSON(utils.Error(c, utils.NotFound, "Error fetching Admin from database  "))
 	}

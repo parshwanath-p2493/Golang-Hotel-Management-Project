@@ -10,7 +10,7 @@ func RoomsRoutes(c *fiber.App) {
 	rooms := c.Group("/rooms")
 	{
 		rooms.Get("/all", controllers.GetAllRooms) //accessable for all
-		rooms.Get("/types/:capacity/:room_type", controllers.FilterRooms)
+		rooms.Get("/types", controllers.FilterRooms)
 
 	}
 }
