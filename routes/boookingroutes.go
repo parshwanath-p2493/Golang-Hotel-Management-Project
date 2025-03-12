@@ -9,8 +9,8 @@ import (
 func CreateBooking(c *fiber.App) {
 	guest := c.Group("/guest")
 	{
-		guest.Post("/bookhotel", controllers.CreateBooking, middleware.GuestAuth)
-		c.Get("/getallfood", controllers.GetFood)
-		c.Post("/signup", controllers.GuestSignup)
+		guest.Post("/bookhotel", middleware.GuestAuth, controllers.CreateBooking) //first call the auth function then call the controller function
+		guest.Post("/signup", controllers.GuestSignup)
+		guest.Get("/getallfood", controllers.GetFood)
 	}
 }

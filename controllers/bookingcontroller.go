@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -21,6 +22,7 @@ func CreateBooking(c *fiber.Ctx) error {
 	var booking models.Booking
 	collection := database.OpenCollection("Bookings")
 	if err := c.BodyParser(&booking); err != nil {
+		log.Println("Invalid Syntax.......")
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, err.Error()))
 	}
 	booking.ID = primitive.NewObjectID()
