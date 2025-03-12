@@ -12,5 +12,8 @@ func CreateBooking(c *fiber.App) {
 		guest.Post("/bookhotel", middleware.GuestAuth, controllers.CreateBooking) //first call the auth function then call the controller function
 		guest.Post("/signup", controllers.GuestSignup)
 		guest.Get("/getallfood", controllers.GetFood)
+		guest.Post("/logout", middleware.GuestAuth, controllers.LogOutGuest)
+		guest.Post("/login", middleware.GuestAuth, controllers.GuestLogin)
+
 	}
 }

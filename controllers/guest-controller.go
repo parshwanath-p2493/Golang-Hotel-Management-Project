@@ -100,3 +100,13 @@ func GuestLogin(c *fiber.Ctx) error {
 	}
 	return c.Status(http.StatusOK).JSON(response)
 }
+
+func LogOutGuest(c *fiber.Ctx) error {
+	role := c.Locals("role")
+	c.ClearCookie("jwt")
+	c.Set("X-Auth-GuestToken", "")
+	if role != nil {
+		c.Locals("role", nil)
+	}
+	return c.Status(fiber.StatusOK).JSON(utils.Response(c, role, "Logged Out Successfully"))
+}

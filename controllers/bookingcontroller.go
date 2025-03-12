@@ -16,6 +16,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// var validate = Validator.New()
+
 func CreateBooking(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -25,10 +27,14 @@ func CreateBooking(c *fiber.Ctx) error {
 		log.Println("Invalid Syntax.......")
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, err.Error()))
 	}
+
 	booking.ID = primitive.NewObjectID()
 	booking.BookingId = booking.ID.Hex()
 	booking.Status = "Pending"
 	booking.Created_time = time.Now()
+	if err := utils.Validation(c, booking); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Error"))
+	}
 	result, err := collection.InsertOne(ctx, booking)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Fill The information corectly and book one room at a time "))

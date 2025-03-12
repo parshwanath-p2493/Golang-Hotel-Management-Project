@@ -90,3 +90,27 @@ func LoginAdmin(c *fiber.Ctx) error {
 	}
 	return c.Status(http.StatusOK).JSON(utils.Response(c, token, "Successfuly Logged IN "))
 }
+
+/*
+func LogOut(c *fiber.Ctx) error {
+	cookie := fiber.Cookie{
+		Name:    "jwt",
+		Value:   "",
+		Expires: time.Now().Local().Add(-time.Hour),
+	}
+	c.Cookie(&cookie)
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"message": "Logged out Successfuly",
+	})
+}
+*/
+
+func LogOut(c *fiber.Ctx) error {
+	role := c.Locals("role")
+	c.ClearCookie("jwt")
+	c.Set("X-Auth-Token", "")
+	if role != nil {
+		c.Locals("role", nil)
+	}
+	return c.Status(fiber.StatusOK).JSON(utils.Response(c, role, "Logged Out Successfully"))
+}

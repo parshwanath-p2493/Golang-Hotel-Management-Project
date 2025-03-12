@@ -121,3 +121,13 @@ func GetManager(c *fiber.Ctx) error {
 	}
 	return c.Status(http.StatusOK).JSON(utils.Response(c, manager, "The Manager details are:"))
 }
+
+func LogOutManager(c *fiber.Ctx) error {
+	role := c.Locals("role")
+	c.ClearCookie("jwt")
+	c.Set("X-Auth-ManagerToken", "")
+	if role != nil {
+		c.Locals("role", nil)
+	}
+	return c.Status(fiber.StatusOK).JSON(utils.Response(c, role, "Logged Out Successfully"))
+}

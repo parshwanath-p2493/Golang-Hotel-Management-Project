@@ -11,6 +11,8 @@ func ManagerRoutes(c *fiber.App) {
 	{
 		manager.Post("/signup", controllers.ManagerSignup)
 		manager.Delete("/delete/:id", controllers.DeleteManager)
+		manager.Post("/logout", controllers.LogOut)
+
 		c.Get("/getallbookings", controllers.GetBooking)
 	}
 }
