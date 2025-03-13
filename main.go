@@ -41,6 +41,8 @@ func main() {
 	routes.RoomsRoutesAuth(r)
 	routes.RoomsRoutesAuthManager(r)
 	routes.CreateBooking(r)
+	routes.NotificationRoutes(r)
+
 	//We need to call  all routes before starting the server else it will be error
 	log.Fatal(r.Listen(":" + PORT))
 
