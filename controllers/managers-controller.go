@@ -124,8 +124,9 @@ func GetManager(c *fiber.Ctx) error {
 
 func LogOutManager(c *fiber.Ctx) error {
 	cookie := fiber.Cookie{
-
-		Expires: time.Now().Add(-time.Hour),
+		Name:    "jwt",
+		Value:   "",
+		Expires: time.Now().Local().Add(-time.Hour),
 	}
 	c.Cookie(&cookie)
 	role := c.Locals("role")
