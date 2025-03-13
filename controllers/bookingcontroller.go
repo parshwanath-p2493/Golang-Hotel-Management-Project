@@ -28,7 +28,7 @@ func CreateBooking(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, err.Error()))
 	}
 	if err := utils.Validation(c, booking); err != nil {
-		log.Println("Enter all the required Fields", err)
+		log.Fatal("Enter all the required Fields", err)
 		return err
 	}
 
@@ -40,7 +40,7 @@ func CreateBooking(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Fill The information corectly and book one room at a time "))
 	}
-	utils.SendNotificationToManager("", booking.Guest_id, booking.Room_number, booking.Food_Items)
+	utils.SendNotificationToManager("67cca92b5532aeb8476e2334", booking.Guest_id, booking.Room_number, booking.Food_Items)
 	return c.Status(http.StatusOK).JSON(utils.Response(c, result, "Booking Successfull"))
 }
 func GetBooking(c *fiber.Ctx) error {
@@ -94,5 +94,5 @@ func UpdateBookingStatus(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to Update booking"))
 	}
-	return c.Status(http.StatusOK).JSON(utils.Response(c, nil, "Booking"+status+"Successfuly"))
+	return c.Status(http.StatusOK).JSON(utils.Response(c, "Booking STATUS", "Booking"+status+"Successfuly"))
 }

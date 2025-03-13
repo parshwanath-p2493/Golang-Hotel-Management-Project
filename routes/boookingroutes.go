@@ -14,7 +14,5 @@ func CreateBooking(c *fiber.App) {
 		guest.Get("/getallfood", controllers.GetFood)
 		guest.Post("/logout", middleware.GuestAuth, controllers.LogOutGuest)
 		guest.Post("/login", controllers.GuestLogin)
-		app.Patch("/booking/:id", middleware.ManagerAuthentication, controllers.UpdateBookingStatus) // Manager approves/rejects booking
-
 	}
 }
