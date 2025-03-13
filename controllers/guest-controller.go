@@ -87,7 +87,7 @@ func GuestLogin(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Enter corrrect password ,Password is wrong "))
 	}
-	log.Println(ExistingGuest.First_Name, ExistingGuest.Last_Name)
+	log.Println("\n", ExistingGuest.First_Name, ExistingGuest.Last_Name)
 	log.Println("\n \n Password Matched Login Continue.... ")
 	token, err := helpers.GenerateToken(ExistingGuest.First_Name, ExistingGuest.Email, "Guest", "Guest")
 	if err != nil {

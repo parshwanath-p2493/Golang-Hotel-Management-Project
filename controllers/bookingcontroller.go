@@ -27,19 +27,20 @@ func CreateBooking(c *fiber.Ctx) error {
 		log.Println("Invalid Syntax.......")
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, err.Error()))
 	}
+	if err := utils.Validation(c, booking); err != nil {
+		log.Println("Enter all the required Fields", err)
+		return err
+	}
 
 	booking.ID = primitive.NewObjectID()
 	booking.BookingId = booking.ID.Hex()
 	booking.Status = "Pending"
 	booking.Created_time = time.Now()
-	if err := utils.Validation(c, booking); err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Error"))
-	}
 	result, err := collection.InsertOne(ctx, booking)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Fill The information corectly and book one room at a time "))
 	}
-	utils.SendNotificationToManager(booking.Guest_id, booking.Room_number, booking.Food_Items)
+	utils.SendNotificationToManager("", booking.Guest_id, booking.Room_number, booking.Food_Items)
 	return c.Status(http.StatusOK).JSON(utils.Response(c, result, "Booking Successfull"))
 }
 func GetBooking(c *fiber.Ctx) error {
@@ -69,4 +70,29 @@ func GetBooking(c *fiber.Ctx) error {
 	}
 	return c.Status(http.StatusOK).JSON(utils.Response(c, booking, "Booking data fetched Successfull"))
 
+}
+func UpdateBookingStatus(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	bookingID := c.Params("id")
+	status := c.Query("status")
+	if status != "approved" && status != "rejected" {
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Invalid Request"))
+	}
+	collection := database.OpenCollection("Bookings")
+	objectID, err := primitive.ObjectIDFromHex(bookingID)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Invalid Booking ID"))
+	}
+	update := bson.M{
+		"$set": bson.M{
+			"status":       status,
+			"updated_time": time.Now(),
+		},
+	}
+	_, err = collection.UpdateOne(ctx, bson.M{"_id": objectID}, update)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to Update booking"))
+	}
+	return c.Status(http.StatusOK).JSON(utils.Response(c, nil, "Booking"+status+"Successfuly"))
 }

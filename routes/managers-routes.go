@@ -9,11 +9,12 @@ import (
 func ManagerRoutes(c *fiber.App) {
 	manager := c.Group("/manager", middleware.ManagerAuthentication)
 	{
+		manager.Get("/dashboard", func(c *fiber.Ctx) error { return c.JSON(fiber.Map{"message": "Manager Dashboard"}) })
 		manager.Post("/signup", controllers.ManagerSignup)
 		manager.Delete("/delete/:id", controllers.DeleteManager)
-		manager.Post("/logout", controllers.LogOut)
+		manager.Post("/logout", controllers.LogOutManager)
 
-		c.Get("/getallbookings", controllers.GetBooking)
+		manager.Get("/getallbookings", controllers.GetBooking)
 	}
 }
 

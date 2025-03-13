@@ -58,6 +58,7 @@ func ManagerAuthentication(c *fiber.Ctx) error {
 	}
 
 	c.Locals("department", claims.Department)
+	c.Locals("role", claims.Role)
 	return c.Next()
 }
 
@@ -101,6 +102,8 @@ func AdminAuthentication(c *fiber.Ctx) error {
 	return c.Next()
 
 }
+
+/*
 func GuestAuth(c *fiber.Ctx) error {
 	clientToken := c.Get("X-Auth-GuestToken")
 	clientToken = strings.Replace(clientToken, "Bearer", "", 1)
@@ -109,9 +112,9 @@ func GuestAuth(c *fiber.Ctx) error {
 			"error": "Missing Token of Guest",
 		})
 	}
-	claims := helpers.Info{}
+	claims := &helpers.Info{}
 	_, err := jwt.ParseWithClaims(clientToken, claims, func(t *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("SERCET_KEY")), nil
+		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
 	if err != nil {
 		log.Println("Error Parsing token", err)
@@ -125,4 +128,48 @@ func GuestAuth(c *fiber.Ctx) error {
 	c.Locals("role", claims.Role)
 	return c.Next()
 
+}
+*/
+
+func GuestAuth(c *fiber.Ctx) error {
+	clientToken := c.Get("X-Auth-GuestToken")
+	// Clean the token by removing the Bearer prefix if present
+	clientToken = strings.TrimPrefix(clientToken, "Bearer ")
+
+	// Check if the token is empty
+	if clientToken == "" {
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Missing Token of Guest",
+		})
+	}
+
+	// Debug: Print the token to verify its format
+	log.Printf("Received Token: %s", clientToken)
+
+	// Parse the token
+	claims := &helpers.Info{}
+	_, err := jwt.ParseWithClaims(clientToken, claims, func(t *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+
+	// Check if there was an error parsing the token
+	if err != nil {
+		log.Printf("Error Parsing Token: %s", err.Error())
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{
+			"message": "Token is mismatched or Token is expired. Please login again.",
+		})
+	}
+
+	log.Printf("Name of the guest: %s", claims.Name)
+	log.Printf("Email of the guest: %s", claims.Email)
+
+	// Check if the role is correct
+	if claims.Role != "Guest" && claims.Role != "guest" && claims.Role != "GUEST" {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "Access forbidden. Only Guest can access.",
+		})
+	}
+
+	c.Locals("role", claims.Role)
+	return c.Next()
 }

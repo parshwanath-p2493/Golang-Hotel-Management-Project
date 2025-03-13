@@ -105,7 +105,7 @@ func LogOut(c *fiber.Ctx) error {
 }
 */
 
-func LogOut(c *fiber.Ctx) error {
+func LogOutAdmin(c *fiber.Ctx) error {
 	role := c.Locals("role")
 	c.ClearCookie("jwt")
 	c.Set("X-Auth-Token", "")

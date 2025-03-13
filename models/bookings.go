@@ -14,6 +14,7 @@ type Booking struct {
 	Room_number  int32              `json:"room_number" bson:"room_number" validate:"required"`
 	Status       string             `json:"status" bson:"status"`
 	Food_Items   []string           `json:"food_items" bson:"food_items"`
+	Token        string             `bson:"token,omitempty" json:"token,omitempty"`
 	BookingDate  time.Time          `json:"bookingdate" bson:"bookingdate" validate:"required"`
 	CheckOutDate time.Time          `json:"checkoutdate" bson:"checkoutdate" validate:"required"`
 	Created_time time.Time          `json:"created_time" bson:"created_time" validate:"required"`

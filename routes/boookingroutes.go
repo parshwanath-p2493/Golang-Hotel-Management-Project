@@ -13,7 +13,7 @@ func CreateBooking(c *fiber.App) {
 		guest.Post("/signup", controllers.GuestSignup)
 		guest.Get("/getallfood", controllers.GetFood)
 		guest.Post("/logout", middleware.GuestAuth, controllers.LogOutGuest)
-		guest.Post("/login", middleware.GuestAuth, controllers.GuestLogin)
+		guest.Post("/login", controllers.GuestLogin)
 
 	}
 }
