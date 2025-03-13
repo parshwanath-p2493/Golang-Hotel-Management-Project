@@ -27,15 +27,16 @@ func CreateBooking(c *fiber.Ctx) error {
 		log.Println("Invalid Syntax.......")
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, err.Error()))
 	}
-	if err := utils.Validation(c, booking); err != nil {
-		log.Fatal("Enter all the required Fields", err)
-		return err
-	}
 
 	booking.ID = primitive.NewObjectID()
 	booking.BookingId = booking.ID.Hex()
 	booking.Status = "Pending"
 	booking.Created_time = time.Now()
+	booking.Updated_time = booking.ID.Timestamp()
+	if err, count := utils.Validation(c, booking); count > 1 {
+		log.Fatal("Enter all the required Fields", err)
+		return err
+	}
 	result, err := collection.InsertOne(ctx, booking)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Fill The information corectly and book one room at a time "))

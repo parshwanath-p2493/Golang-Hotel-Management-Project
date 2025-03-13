@@ -13,8 +13,9 @@ import (
 
 //var validato = validator.Validate()
 
-func Validation(c *fiber.Ctx, model interface{}) error {
+func Validation(c *fiber.Ctx, model interface{}) (error, int16) {
 	var validate = validator.New()
+	var count int16
 	var errormessage string
 	err := validate.Struct(model)
 	if err != nil {
@@ -23,13 +24,15 @@ func Validation(c *fiber.Ctx, model interface{}) error {
 		for _, validationError := range ErrorMSg {
 			errormessage += fmt.Sprintf("Field %s is must required %s \n ", validationError.Field(), validationError.Tag())
 			log.Println("Validation Error:", ErrorMSg)
+			count++
 			return c.Status(http.StatusBadRequest).JSON(fiber.Map{
 				"error": map[string]string{
 					"field":   validationError.Field(),
 					"message": validationError.Tag(),
 				},
-			})
+			}), count
 		}
 	}
-	return nil
+	log.Println("\n", count)
+	return nil, count
 }

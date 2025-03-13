@@ -4,7 +4,6 @@ go 1.24.0
 
 require (
 	github.com/go-playground/validator v9.31.0+incompatible
-	github.com/gofiber/contrib/websocket v1.3.3
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/gofiber/websocket/v2 v2.2.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
@@ -28,6 +27,7 @@ require (
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/savsgio/gotils v0.0.0-20240303185622-093b76447511 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.59.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect

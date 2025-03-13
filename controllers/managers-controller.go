@@ -123,6 +123,11 @@ func GetManager(c *fiber.Ctx) error {
 }
 
 func LogOutManager(c *fiber.Ctx) error {
+	cookie := fiber.Cookie{
+
+		Expires: time.Now().Add(-time.Hour),
+	}
+	c.Cookie(&cookie)
 	role := c.Locals("role")
 	c.ClearCookie("jwt")
 	c.Set("X-Auth-ManagerToken", "")
