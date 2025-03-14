@@ -27,7 +27,7 @@ func CreateBooking(c *fiber.Ctx) error {
 		log.Println("Invalid Syntax.......")
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, err.Error()))
 	}
-
+	//assigning the details...
 	booking.ID = primitive.NewObjectID()
 	booking.BookingId = booking.ID.Hex()
 	booking.Status = "Pending"

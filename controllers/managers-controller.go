@@ -126,8 +126,8 @@ func LogOutManager(c *fiber.Ctx) error {
 	cookie := fiber.Cookie{
 		Name:    "jwt",
 		Value:   "",
-		Expires: time.Now().Local().Add(-time.Hour),
-	}
+		Expires: time.Now().Local().Add(-time.Hour * time.Duration(24)), //.Add(-time.Hour): This subtracts one hour from the current time.
+	} // The negative sign (-) indicates that we're going back in time by one hour, so making the expiration time one hour before the current time.
 	c.Cookie(&cookie)
 	role := c.Locals("role")
 	c.ClearCookie("jwt")
@@ -135,5 +135,7 @@ func LogOutManager(c *fiber.Ctx) error {
 	if role != nil {
 		c.Locals("role", nil)
 	}
+	c.Locals("department", nil)
+	log.Println("Manager logged out successfully")
 	return c.Status(fiber.StatusOK).JSON(utils.Response(c, role, "Logged Out Successfully"))
 }

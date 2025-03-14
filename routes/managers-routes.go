@@ -14,7 +14,6 @@ func ManagerRoutes(c *fiber.App) {
 		manager.Delete("/delete/:id", controllers.DeleteManager)
 		manager.Post("/logout", controllers.LogOutManager)
 		manager.Patch("/booking/:id", controllers.UpdateBookingStatus) // Manager approves/rejects booking
-
 		manager.Get("/getallbookings", controllers.GetBooking)
 	}
 }
