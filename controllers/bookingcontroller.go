@@ -22,6 +22,7 @@ func CreateBooking(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var booking models.Booking
+	var room models.Rooms
 	collection := database.OpenCollection("Bookings")
 	if err := c.BodyParser(&booking); err != nil {
 		log.Println("Invalid Syntax.......")
@@ -33,6 +34,12 @@ func CreateBooking(c *fiber.Ctx) error {
 	booking.Status = "Pending"
 	booking.Created_time = time.Now()
 	booking.Updated_time = booking.ID.Timestamp()
+
+	if room.Availability_status == string(models.Room_Occupied) {
+		utils.Error(c, utils.Conflict, "Room already occupied by guest.")
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Room already occupied by guest"))
+
+	}
 	if err, count := utils.Validation(c, booking); count > 1 {
 		log.Fatal("Enter all the required Fields", err)
 		return err
