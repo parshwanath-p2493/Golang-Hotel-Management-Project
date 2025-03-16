@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -38,17 +39,27 @@ func CreateBooking(c *fiber.Ctx) error {
 	if room.Availability_status == string(models.Room_Occupied) {
 		utils.Error(c, utils.Conflict, "Room already occupied by guest.")
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Room already occupied by guest"))
+	}
+	roomCapacityInt, _ := strconv.ParseInt(room.Capacity, 10, 32) //we can also use strconv.atoi(room.capacity) --->> ASCII to INT
 
+	if booking.NumberOfGuest > int32(roomCapacityInt) {
+		message := fmt.Sprintf("Number of Guest exceed the room capacity.\n Room capacity is %d", roomCapacityInt)
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, message))
 	}
 	if err, count := utils.Validation(c, booking); count > 1 {
 		log.Fatal("Enter all the required Fields", err)
 		return err
 	}
+
 	result, err := collection.InsertOne(ctx, booking)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Fill The information corectly and book one room at a time "))
 	}
 	utils.SendNotificationToManager("67cca92b5532aeb8476e2334", booking.Guest_id, booking.Room_number, booking.Food_Items)
+	if err := UpdateRoomStatus(room.Room_id, models.Room_Occupied); err != nil { //we need to change the room availability to OCCUPIED
+		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, err.Error()))
+	}
+
 	return c.Status(http.StatusOK).JSON(utils.Response(c, result, "Booking Successfull"))
 }
 func GetBooking(c *fiber.Ctx) error {

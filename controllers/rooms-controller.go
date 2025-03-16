@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -145,4 +146,28 @@ func FilterRooms(c *fiber.Ctx) error {
 	}
 	return c.Status(http.StatusOK).JSON(utils.Response(c, rooms, "Operation completed successfully"))
 
+}
+func UpdateRoomStatus(id string, status models.Availability_status) error {
+	// ctx,cancel:=context.WithTimeout(context.Background(),10*time.Second)
+	// defer cancel()
+	updated_at := time.Now()
+	update := bson.M{
+		"$set": bson.M{
+			"availability_status": status,
+			"updated_time":        updated_at,
+		},
+	}
+	collection := database.OpenCollection("Rooms")
+	upsert := true
+	filter := bson.M{"room_id": id}
+	options := options.UpdateOptions{
+		Upsert: &upsert,
+	}
+
+	_, err := collection.UpdateOne(context.TODO(), filter, update, &options)
+	if err != nil {
+		log.Println(utils.Error(&fiber.Ctx{}, utils.InternalServerError, err.Error()))
+		return err
+	}
+	return nil
 }
