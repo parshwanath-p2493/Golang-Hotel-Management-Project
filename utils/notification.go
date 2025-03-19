@@ -44,7 +44,7 @@ func SendNotificationToManager(managerID string, guestID string, Room_number int
 
 	subject := "New Booking Request - Action Required"
 
-	er := sendEmail(managerEmail, subject, htmlContent, message)
+	er := SendEmail(managerEmail, subject, htmlContent, message)
 	if er != nil {
 		log.Printf("\n Failed to send msg to manager %s:%v", managerEmail, er)
 	} else {
@@ -53,7 +53,7 @@ func SendNotificationToManager(managerID string, guestID string, Room_number int
 	}
 }
 
-func sendEmail(toEmail, subject, htmlContent, plainText string) error {
+func SendEmail(toEmail, subject, htmlContent, plainText string) error {
 	fromEmail := "parshwanathparamagond1234@gmail.com"
 	//fromPassword := "fbfy zhlt csqr djay"
 	fromPassword := os.Getenv("FromPassword")
