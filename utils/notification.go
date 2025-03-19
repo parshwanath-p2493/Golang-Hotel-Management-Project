@@ -66,12 +66,15 @@ func SendNotificationToManager(managerID string, guestID string, Room_number int
 }
 
 func sendEmail(toEmail,subject,htmlContent,message string)error {
+	fromEmail := "parshwanathparamagond1234@gmail.com"
+	fromPassword:=
 	toEmail:=
 
-	fromEmail := "parshwanathparamagond1234@gmail.com"
 
 
 }
+
+
 func WebSocketHandler(c *websocket.Conn) {
 	managerID := c.Params("manager_id")
 
