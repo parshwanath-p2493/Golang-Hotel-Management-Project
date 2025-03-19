@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/gofiber/websocket/v2"
+	"github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 //var ActiveConnections = make(map[string]*websocket.Conn)	// only has one connection.
@@ -31,6 +33,18 @@ func SendNotificationToManager(managerID string, guestID string, Room_number int
 	// Create a message based on the parameters passed.
 	message := fmt.Sprintf("🔔 Notification: Guest %s has booked Room %v with food items %v\n", guestID, Room_number, foodItems)
 
+	// Compose the HTML message with approval and rejection buttons
+	htmlContent := fmt.Sprintf(`
+		<html>
+			<body>
+				<p>%s</p>
+				<p>Do you want to approve or reject the booking?</p>
+				<a href="http://yourapp.com/approve?bookingID=1234&managerID=managerID" style="background-color: green; color: white; padding: 10px; text-decoration: none;">Approve</a>
+				&nbsp;&nbsp;
+				<a href="http://yourapp.com/reject?bookingID=1234&managerID=managerID" style="background-color: red; color: white; padding: 10px; text-decoration: none;">Reject</a>
+			</body>
+		</html>`, message)
+
 	// Check if the manager is connected
 	if connections, exists := managerConnections[managerID]; exists {
 		err := connections.WriteMessage(websocket.TextMessage, []byte(message))
@@ -41,6 +55,22 @@ func SendNotificationToManager(managerID string, guestID string, Room_number int
 		}
 	} else {
 		log.Printf("Manager %s is not connected. Please login the manager.", managerID)
+	}
+	managerEmail := "thekingofmyqueenxyz143@gmail.com"
+	// Set up the SendGrid email client
+	from := mail.NewEmail("Your App", "no-reply@yourapp.com")
+	to := mail.NewEmail("Manager", managerEmail)
+	subject := "New Booking Request - Action Required"
+	plainTextContent := message
+	email := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
+
+	// Send the email using the SendGrid API
+	client := sendgrid.NewSendClient("AC87426785d2186e52293ce8e93522f6ed")
+	response, err := client.Send(email)
+	if err != nil {
+		log.Printf("Failed to Send Notification to manager %s: %v", managerEmail, err)
+	} else {
+		log.Printf("Email sent to manager %s. Status Code: %d", managerEmail, response.StatusCode)
 	}
 }
 
