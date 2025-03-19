@@ -67,11 +67,13 @@ func SendNotificationToManager(managerID string, guestID string, Room_number int
 
 func sendEmail(toEmail,subject,htmlContent,message string)error {
 	fromEmail := "parshwanathparamagond1234@gmail.com"
-	fromPassword:=
+	fromPassword:="fbfy zhlt csqr djay"
+	smtpHost := "smtp.gmail.com"
+	smtpPort := 587
 	toEmail:=
 
 
-
+return nil
 }
 
 
