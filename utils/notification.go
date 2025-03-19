@@ -3,10 +3,11 @@ package utils
 import (
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/gofiber/websocket/v2"
-	"golang.org/x/text/message"
+	"gopkg.in/gomail.v2"
 )
 
 // var managerConnections = make(map[string]map[*websocket.Conn]bool) //can have multiple connections (e.g., for a manager logged in on multiple devices).
@@ -40,42 +41,38 @@ func SendNotificationToManager(managerID string, guestID string, Room_number int
 		log.Printf("Manager %s is not connected. Please login the manager.", managerID)
 	}
 	managerEmail := "thekingofmyqueenxyz143@gmail.com"
-	// Set up the SendGrid email client
-	// from := mail.NewEmail("Your App", "no-reply@yourapp.com")
-	// to := mail.NewEmail("Manager", managerEmail)
-	subject := "New Booking Request - Action Required"
-	// plainTextContent := message
-	// email := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
 
-	// // Send the email using the SendGrid API
-	// client := sendgrid.NewSendClient("your - key ")
-	// response, err := client.Send(email)
-	// if err != nil {
-	// 	log.Printf("Failed to Send Notification to manager %s: %v", managerEmail, err)
-	// } else {
-	// 	log.Printf("Email sent to manager %s. Status Code: %d", managerEmail, response.StatusCode)
-	// }
+	subject := "New Booking Request - Action Required"
 
 	er := sendEmail(managerEmail, subject, htmlContent, message)
 	if er != nil {
-		log.Printf("\n Failed to send msg to manager %s,:%v", &er)
+		log.Printf("\n Failed to send msg to manager %s:%v", er)
 	} else {
-		log.Printf("\n ✅ Email sent  to manager Succesfuly  %s,:%v", &er)
+		log.Printf("\n ✅ Email sent  to manager Succesfuly  %s:%v", er)
 
 	}
 }
 
-func sendEmail(toEmail,subject,htmlContent,message string)error {
+func sendEmail(toEmail, subject, htmlContent, plainText string) error {
 	fromEmail := "parshwanathparamagond1234@gmail.com"
-	fromPassword:="fbfy zhlt csqr djay"
+	//fromPassword := "fbfy zhlt csqr djay"
+	fromPassword := os.Getenv("FromPassword")
+
 	smtpHost := "smtp.gmail.com"
 	smtpPort := 587
-	toEmail:=
+	message := gomail.NewMessage()
+	message.SetHeader("From", fromEmail)
+	message.SetHeader("To", toEmail)
+	message.SetHeader("Subject", subject)
+	message.SetBody("text/plain", plainText)
+	message.AddAlternative("text/html", htmlContent)
 
+	dialer := gomail.NewDialer(smtpHost, smtpPort, fromEmail, fromPassword)
 
-return nil
+	// Send Email
+	return dialer.DialAndSend(message)
+
 }
-
 
 func WebSocketHandler(c *websocket.Conn) {
 	managerID := c.Params("manager_id")
