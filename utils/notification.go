@@ -65,7 +65,7 @@ func SendNotificationToManager(managerID string, guestID string, Room_number int
 	email := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
 
 	// Send the email using the SendGrid API
-	client := sendgrid.NewSendClient("AC87426785d2186e52293ce8e93522f6ed")
+	client := sendgrid.NewSendClient("your - key ")
 	response, err := client.Send(email)
 	if err != nil {
 		log.Printf("Failed to Send Notification to manager %s: %v", managerEmail, err)
