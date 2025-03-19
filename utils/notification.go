@@ -46,9 +46,9 @@ func SendNotificationToManager(managerID string, guestID string, Room_number int
 
 	er := sendEmail(managerEmail, subject, htmlContent, message)
 	if er != nil {
-		log.Printf("\n Failed to send msg to manager %s:%v", er)
+		log.Printf("\n Failed to send msg to manager %s:%v", managerEmail, er)
 	} else {
-		log.Printf("\n ✅ Email sent  to manager Succesfuly  %s:%v", er)
+		log.Printf("\n ✅ Email sent  to manager Succesfuly :%s", managerEmail)
 
 	}
 }
