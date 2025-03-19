@@ -6,25 +6,8 @@ import (
 	"time"
 
 	"github.com/gofiber/websocket/v2"
-	"github.com/sendgrid/sendgrid-go"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"golang.org/x/text/message"
 )
-
-//var ActiveConnections = make(map[string]*websocket.Conn)	// only has one connection.
-
-/*
-func SendNotificationToManager(managerID string, guestID string, Room_number int32, foodItems []string) {
-	message := fmt.Sprintf("🔔 Notification: Guest %s has booked Room %v with food items %v\n", guestID, Room_number, foodItems)
-	if connection, exists := ActiveConnections[managerID]; exists {
-		err := connection.WriteMessage(websocket.TextMessage, []byte(message))
-		if err != nil {
-			log.Printf("Failed to Send Notification to manager %s:%v", managerID, err)
-		} else {
-			log.Printf("Manager %s  Not connected to updateds. Please Login Manager", managerID)
-		}
-	}
-}
-*/
 
 // var managerConnections = make(map[string]map[*websocket.Conn]bool) //can have multiple connections (e.g., for a manager logged in on multiple devices).
 var managerConnections = make(map[string]*websocket.Conn)
@@ -58,22 +41,37 @@ func SendNotificationToManager(managerID string, guestID string, Room_number int
 	}
 	managerEmail := "thekingofmyqueenxyz143@gmail.com"
 	// Set up the SendGrid email client
-	from := mail.NewEmail("Your App", "no-reply@yourapp.com")
-	to := mail.NewEmail("Manager", managerEmail)
+	// from := mail.NewEmail("Your App", "no-reply@yourapp.com")
+	// to := mail.NewEmail("Manager", managerEmail)
 	subject := "New Booking Request - Action Required"
-	plainTextContent := message
-	email := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
+	// plainTextContent := message
+	// email := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
 
-	// Send the email using the SendGrid API
-	client := sendgrid.NewSendClient("your - key ")
-	response, err := client.Send(email)
-	if err != nil {
-		log.Printf("Failed to Send Notification to manager %s: %v", managerEmail, err)
+	// // Send the email using the SendGrid API
+	// client := sendgrid.NewSendClient("your - key ")
+	// response, err := client.Send(email)
+	// if err != nil {
+	// 	log.Printf("Failed to Send Notification to manager %s: %v", managerEmail, err)
+	// } else {
+	// 	log.Printf("Email sent to manager %s. Status Code: %d", managerEmail, response.StatusCode)
+	// }
+
+	er := sendEmail(managerEmail, subject, htmlContent, message)
+	if er != nil {
+		log.Printf("\n Failed to send msg to manager %s,:%v", &er)
 	} else {
-		log.Printf("Email sent to manager %s. Status Code: %d", managerEmail, response.StatusCode)
+		log.Printf("\n ✅ Email sent  to manager Succesfuly  %s,:%v", &er)
+
 	}
 }
 
+func sendEmail(toEmail,subject,htmlContent,message string)error {
+	toEmail:=
+
+	fromEmail := "parshwanathparamagond1234@gmail.com"
+
+
+}
 func WebSocketHandler(c *websocket.Conn) {
 	managerID := c.Params("manager_id")
 
