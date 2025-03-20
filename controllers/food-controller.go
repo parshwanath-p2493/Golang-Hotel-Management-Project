@@ -85,6 +85,7 @@ func ChangeFood(c *fiber.Ctx) error {
 		"$set": bson.M{
 			"food_name":     UpdateFood.Item_name,
 			"category_name": UpdateFood.Category_name,
+			"vegornonveg":   UpdateFood.VegorNonveg,
 			"price":         UpdateFood.Price,
 			"update_time":   time.Now(),
 		},

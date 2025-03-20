@@ -2,9 +2,13 @@ package controllers
 
 import (
 	"context"
+	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"github.com/parshwanath-p2493/Project/database"
 	"github.com/parshwanath-p2493/Project/helpers"
@@ -88,6 +92,19 @@ func LoginAdmin(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to generate token"))
 	}
+	filter := bson.M{"admin_id": admin.Admin_id}
+	update := bson.M{
+		"$set": bson.M{
+			"email": admin.Email,
+			"token": token,
+		},
+	}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Token not updated  "))
+	}
+	log.Println("Refreshed token added to the Mongosuccessfuly", result)
+
 	return c.Status(http.StatusOK).JSON(utils.Response(c, token, "Successfuly Logged IN "))
 }
 
@@ -107,15 +124,66 @@ func LogOut(c *fiber.Ctx) error {
 
 func LogOutAdmin(c *fiber.Ctx) error {
 	cookie := fiber.Cookie{
-
+		Name:    "jwt", // Name of the cookie
+		Value:   "",
 		Expires: time.Now().Add(-time.Hour),
 	}
 	c.Cookie(&cookie)
 	role := c.Locals("role")
-	c.ClearCookie("jwt")
-	c.Set("X-Auth-Token", "")
+	//c.ClearCookie("jwt")
+	c.Set("X-Auth-Token", "") //erase the token from request header
+	clientToken := c.Get("X-Auth-Token")
+	clientToken = strings.Replace(clientToken, "Bearer ", "", 1)
+	claims := &helpers.Info{}
+	_, err2 := jwt.ParseWithClaims(clientToken, claims, func(t *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+	if err2 != nil {
+		log.Println("Error Parsing token in LOGOUT SESSION ", err2)
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "INVALID OR EXPIRED TOKEN"})
+	} else {
+		deleted, delErr := utils.DeleteAuth(claims.Email, "Admin")
+		if delErr != nil {
+			log.Println("Error invalidating the token Metadata")
+		}
+		if deleted == 0 {
+			log.Println("No active Session Found ")
+			return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, delErr.Error()))
+		}
+	}
+
 	if role != nil {
 		c.Locals("role", nil)
 	}
+
 	return c.Status(fiber.StatusOK).JSON(utils.Response(c, role, "Logged Out Successfully"))
 }
+
+/**
+
+updateObj := []bson.E{
+	// Start with the required fields for update (email, token)
+	{Key: "email", Value: admin.Email},
+	{Key: "token", Value: token},
+}
+
+// Conditionally add the "updated_at" field if necessary
+updateObj = append(updateObj, bson.E{Key: "updated_at", Value: branch.Updated_at})
+
+// Create the update document
+update := bson.M{
+	"$set": updateObj,  // Use the dynamically built update object
+}
+
+filter := bson.M{"admin_id": admin.Admin_id}
+
+result, err := collection.UpdateOne(ctx, filter, update)
+if err != nil {
+	return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Token not updated"))
+}
+
+log.Println("Refreshed token added to the MongoDB successfully", result)
+
+return c.Status(http.StatusOK).JSON(utils.Response(c, token, "Successfully Logged IN"))
+
+**/

@@ -7,7 +7,12 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/parshwanath-p2493/Project/database"
+	_ "github.com/parshwanath-p2493/Project/docs" // Import Swagger docs
 	"github.com/parshwanath-p2493/Project/routes"
+
+	// Correct Swagger import
+	fiberSwagger "github.com/swaggo/fiber-swagger"
+	_ "github.com/swaggo/fiber-swagger/example/docs"
 )
 
 func main() {
@@ -43,6 +48,7 @@ func main() {
 	routes.CreateBooking(r)
 	routes.NotificationRoutes(r)
 
+	r.Get("/swagger/*", fiberSwagger.WrapHandler)
 	//We need to call  all routes before starting the server else it will be error
 	log.Fatal(r.Listen(":" + PORT))
 

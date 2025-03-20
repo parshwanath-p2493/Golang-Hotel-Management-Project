@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"github.com/parshwanath-p2493/Project/database"
 	"github.com/parshwanath-p2493/Project/helpers"
@@ -82,7 +85,18 @@ func ManagerLogin(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to generate token"))
 	}
-
+	filter := bson.M{"admin_id": ExistedManager.Manager_id}
+	update := bson.M{
+		"$set": bson.M{
+			"email": ExistedManager.Email,
+			"token": token,
+		},
+	}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Token not updated  "))
+	}
+	log.Println("Refreshed token added to the Mongosuccessfuly", result)
 	response := fiber.Map{
 		"message": token,                                                             // From utils.Message (you can adjust this as needed)
 		"data":    utils.Response(c, ExistedManager, "Log in  successfully")["data"], // Get "data" from utils.Response
@@ -124,18 +138,37 @@ func GetManager(c *fiber.Ctx) error {
 
 func LogOutManager(c *fiber.Ctx) error {
 	cookie := fiber.Cookie{
-		Name:    "jwt",
+		Name:    "jwt", // Name of the cookie
 		Value:   "",
-		Expires: time.Now().Local().Add(-time.Hour * time.Duration(24)), //.Add(-time.Hour): This subtracts one hour from the current time.
-	} // The negative sign (-) indicates that we're going back in time by one hour, so making the expiration time one hour before the current time.
+		Expires: time.Now().Add(-time.Hour),
+	}
 	c.Cookie(&cookie)
 	role := c.Locals("role")
-	c.ClearCookie("jwt")
-	c.Set("X-Auth-ManagerToken", "")
+	//c.ClearCookie("jwt")
+	c.Set("X-Auth-Token", "") //erase the token from request header
+	clientToken := c.Get("X-Auth-Token")
+	clientToken = strings.Replace(clientToken, "Bearer ", "", 1)
+	claims := &helpers.Info{}
+	_, err2 := jwt.ParseWithClaims(clientToken, claims, func(t *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+	if err2 != nil {
+		log.Println("Error Parsing token in LOGOUT SESSION ", err2)
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "INVALID OR EXPIRED TOKEN"})
+	} else {
+		deleted, delErr := utils.DeleteAuth(claims.Email, "Managers")
+		if delErr != nil {
+			log.Println("Error invalidating the token Metadata")
+		}
+		if deleted == 0 {
+			log.Println("No active Session Found ")
+			return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, delErr.Error()))
+		}
+	}
+
 	if role != nil {
 		c.Locals("role", nil)
 	}
-	c.Locals("department", nil)
-	log.Println("Manager logged out successfully")
+
 	return c.Status(fiber.StatusOK).JSON(utils.Response(c, role, "Logged Out Successfully"))
 }

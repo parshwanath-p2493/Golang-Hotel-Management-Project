@@ -14,7 +14,7 @@ import (
 var managerConnections = make(map[string]*websocket.Conn)
 
 func SendNotificationToManager(managerID string, guestID string, Room_number int32, foodItems []string) {
-	// Create a message based on the parameters passed.
+
 	message := fmt.Sprintf("🔔 Notification: Guest %s has booked Room %v with food items %v\n", guestID, Room_number, foodItems)
 
 	// Compose the HTML message with approval and rejection buttons

@@ -50,7 +50,7 @@ func ApproveBooking(c *fiber.Ctx) error {
 func RejectBooking(c *fiber.Ctx) error {
 	managerID := c.Query("managerID")
 	bookingID := c.Query("bookingID")
-
+	var guest models.Guest
 	if managerID == "" || bookingID == "" {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Missing bookingID or managerID"})
 	}
@@ -72,8 +72,8 @@ func RejectBooking(c *fiber.Ctx) error {
 	}
 
 	// Notify Guest
-	guestEmail := "guest@example.com" // Fetch from DB
-	utils.SendEmail(guestEmail, "Booking Rejected", "Your booking request was rejected.", "Sorry, your booking was rejected due to unavailability.")
+	//guestEmail := "guest@example.com" // Fetch from DB
+	utils.SendEmail(guest.Email, "Booking Rejected", "Your booking request was rejected.", "Sorry, your booking was rejected due to unavailability.")
 	//Better to use Capital Letter while declaring the function name
 	return c.Status(http.StatusOK).JSON(fiber.Map{"message": "Booking rejected successfully"})
 }
