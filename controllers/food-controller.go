@@ -3,6 +3,8 @@ package controllers
 import (
 	"context"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -53,6 +55,43 @@ func GetFood(c *fiber.Ctx) error {
 		SortOrder = 1
 	}
 	sort := bson.M{"price": SortOrder}
+	// Add flag for each food item based on whether it's veg or non-veg
+	for i := range food {
+		if food[i].VegorNonveg == "veg" {
+			food[i].Flag = "green" // Vegetarian -> Green Flag
+		} else if food[i].VegorNonveg == "non-veg" {
+			food[i].Flag = "red" // Non-Vegetarian -> Red Flag
+		}
+	}
+
+	// use of in and nin
+
+	PriceQuery := c.Query("pricein")
+	if PriceQuery != "" {
+		priceList := strings.Split(PriceQuery, ",") // split the string where-ever there is comma separated
+		PriceValues := make([]float64, len(priceList))
+		for _, price := range priceList {
+			PriceFloat, err := strconv.ParseFloat(price, 64)
+			if err != nil {
+				return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Invalid price range"))
+			}
+			PriceValues = append(PriceValues, PriceFloat)
+		}
+		filter["price"] = bson.M{"$in": PriceValues}
+	}
+	PriceQuery2 := c.Query("pricenin")
+	if PriceQuery2 != "" {
+		priceList2 := strings.Split(PriceQuery2, ",") // split the string where-ever there is comma separated
+		PriceValues2 := make([]float64, len(priceList2))
+		for _, price := range priceList2 {
+			PriceFloat, err := strconv.ParseFloat(price, 64)
+			if err != nil {
+				return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Invalid price range"))
+			}
+			PriceValues2 = append(PriceValues2, PriceFloat)
+		}
+		filter["price"] = bson.M{"$nin": PriceValues2}
+	}
 	collection := database.OpenCollection("Food")
 	cursor, err := collection.Find(ctx, filter, options.Find().
 		SetSort(sort).

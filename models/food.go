@@ -12,6 +12,7 @@ type Food struct {
 	Item_name     string             `json:"item_name,omitempty" bson:"item_name,omitempty"`
 	Category_name string             `json:"category_name,omitempty" bson:"category_name,omitempty"`
 	VegorNonveg   string             `json:"vegornonveg,omitempty" bson:"vegornonveg,omitempty"`
+	Flag          string             `json:"flag,omitempty" bson:"flag,omitempty"`
 	Category_id   string             `json:"category_id,omitempty" bson:"category_id,omitempty"`
 	Price         float64            `json:"price,omitempty" bson:"price,omitempty"`
 	Created_time  time.Time          `json:"created_time,omitempty" bson:"created_time,omitempty"`

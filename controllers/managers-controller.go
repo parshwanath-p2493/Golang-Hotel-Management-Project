@@ -85,11 +85,12 @@ func ManagerLogin(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to generate token"))
 	}
-	filter := bson.M{"admin_id": ExistedManager.Manager_id}
+	filter := bson.M{"manager_id": ExistedManager.Manager_id}
 	update := bson.M{
 		"$set": bson.M{
-			"email": ExistedManager.Email,
-			"token": token,
+			"email":        ExistedManager.Email,
+			"token":        token,
+			"updated_time": ExistedManager.Updated_time,
 		},
 	}
 	result, err := collection.UpdateOne(ctx, filter, update)
@@ -137,16 +138,23 @@ func GetManager(c *fiber.Ctx) error {
 }
 
 func LogOutManager(c *fiber.Ctx) error {
-	cookie := fiber.Cookie{
-		Name:    "jwt", // Name of the cookie
-		Value:   "",
-		Expires: time.Now().Add(-time.Hour),
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var manager models.Managers
+	id := c.Params("id")
+	collection := database.OpenCollection("Managers")
+	err := collection.FindOne(ctx, bson.M{"manager_id": id}).Decode(&manager)
+	if err == mongo.ErrNilDocument {
+		return c.Status(http.StatusNotFound).JSON(utils.Error(c, utils.NotFound, "Not data found "))
+	} else if err != nil {
+		// Database error
+		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Error fetching manager from database"))
 	}
-	c.Cookie(&cookie)
-	role := c.Locals("role")
-	//c.ClearCookie("jwt")
-	c.Set("X-Auth-Token", "") //erase the token from request header
-	clientToken := c.Get("X-Auth-Token")
+	log.Println(manager.Email)
+	log.Print(manager.First_name)
+
+	clientToken := c.Get("X-Auth-Token", "")
 	clientToken = strings.Replace(clientToken, "Bearer ", "", 1)
 	claims := &helpers.Info{}
 	_, err2 := jwt.ParseWithClaims(clientToken, claims, func(t *jwt.Token) (interface{}, error) {
@@ -156,19 +164,25 @@ func LogOutManager(c *fiber.Ctx) error {
 		log.Println("Error Parsing token in LOGOUT SESSION ", err2)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "INVALID OR EXPIRED TOKEN"})
 	} else {
-		deleted, delErr := utils.DeleteAuth(claims.Email, "Managers")
+		deleted, delErr := utils.DeleteAuth(manager.Manager_id, "Managers", "manager_id")
 		if delErr != nil {
 			log.Println("Error invalidating the token Metadata")
 		}
 		if deleted == 0 {
 			log.Println("No active Session Found ")
-			return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, delErr.Error()))
+			//return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, delErr.Error()))
 		}
 	}
-
+	cookie := fiber.Cookie{
+		Name:    "jwt", // Name of the cookie
+		Value:   "",
+		Expires: time.Now().Add(-time.Hour),
+	}
+	c.Cookie(&cookie)
+	c.Set("X-Auth-Token", "") //erase the token from request header
+	role := c.Locals("role")
 	if role != nil {
 		c.Locals("role", nil)
 	}
-
 	return c.Status(fiber.StatusOK).JSON(utils.Response(c, role, "Logged Out Successfully"))
 }

@@ -97,7 +97,7 @@ func GuestLogin(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to generate token"))
 	}
 
-	filter := bson.M{"admin_id": ExistingGuest.Guest_id}
+	filter := bson.M{"guest_id": ExistingGuest.Guest_id}
 	update := bson.M{
 		"$set": bson.M{
 			"email": ExistingGuest.Email,
@@ -109,7 +109,7 @@ func GuestLogin(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Token not updated  "))
 	}
-	log.Println("Refreshed token added to the Mongosuccessfuly", result)
+	log.Println("\n Refreshed token added to the Mongosuccessfuly", result)
 
 	response := fiber.Map{
 		"message": token,
@@ -138,7 +138,7 @@ func LogOutGuest(c *fiber.Ctx) error {
 		log.Println("Error Parsing token in LOGOUT SESSION ", err2)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "INVALID OR EXPIRED TOKEN"})
 	} else {
-		deleted, delErr := utils.DeleteAuth(claims.Email, "Guest")
+		deleted, delErr := utils.DeleteAuth(claims.Email, "Guest", "guest_id")
 		if delErr != nil {
 			log.Println("Error invalidating the token Metadata")
 		}

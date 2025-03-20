@@ -139,10 +139,11 @@ func LogOutAdmin(c *fiber.Ctx) error {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
 	if err2 != nil {
+
 		log.Println("Error Parsing token in LOGOUT SESSION ", err2)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "INVALID OR EXPIRED TOKEN"})
 	} else {
-		deleted, delErr := utils.DeleteAuth(claims.Email, "Admin")
+		deleted, delErr := utils.DeleteAuth(claims.Email, "Admin", "admin_id")
 		if delErr != nil {
 			log.Println("Error invalidating the token Metadata")
 		}
@@ -159,8 +160,8 @@ func LogOutAdmin(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(utils.Response(c, role, "Logged Out Successfully"))
 }
 
+//This the fuction code for UPDATE one if we are using Append keyword..
 /**
-
 updateObj := []bson.E{
 	// Start with the required fields for update (email, token)
 	{Key: "email", Value: admin.Email},

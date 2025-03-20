@@ -135,6 +135,7 @@ func FilterRooms(c *fiber.Ctx) error {
 	} else {
 		SortOrder = 1
 	}
+
 	sort := bson.M{"price": SortOrder}
 	result, err := collection.Find(ctx, filter, options.Find().SetSort(sort).SetSkip(int64(page)).SetLimit(int64(limit)))
 	if err != nil {
