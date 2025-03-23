@@ -44,6 +44,7 @@ func main() {
 	routes.RoomsRoutesAuthManager(r)
 	routes.CreateBooking(r)
 	routes.NotificationRoutes(r)
+	routes.SetupRoutes(r)
 
 	//r.Get("/swagger/*", fiberSwagger.WrapHandler)
 	//We need to call  all routes before starting the server else it will be error

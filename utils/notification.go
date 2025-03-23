@@ -23,9 +23,10 @@ func SendNotificationToManager(managerID string, guestID string, Room_number int
 			<body>
 				<p>%s</p>
 				<p>Do you want to approve or reject the booking?</p>
-				<a href="http://yourapp.com/approve?bookingID=1234&managerID=managerID" style="background-color: green; color: white; padding: 10px; text-decoration: none;">Approve</a>
+				<a href="http://localhost:2493/api/approve?bookingID=1234&managerID=managerID" style="background-color: green; color: white; padding: 10px; text-decoration: none;">Approve</a>
 				&nbsp;&nbsp;
-				<a href="http://yourapp.com/reject?bookingID=1234&managerID=managerID" style="background-color: red; color: white; padding: 10px; text-decoration: none;">Reject</a>
+				<a href="http://localhost:2493/api/reject?bookingID=1234&managerID=managerID" style="background-color: red; color: white; padding: 10px; text-decoration: none;">Reject</a>
+
 			</body>
 		</html>`, message)
 

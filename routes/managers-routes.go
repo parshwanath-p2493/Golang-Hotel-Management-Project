@@ -12,10 +12,10 @@ func ManagerRoutes(c *fiber.App) {
 		manager.Get("/dashboard", func(c *fiber.Ctx) error { return c.JSON(fiber.Map{"message": "Manager Dashboard"}) })
 		manager.Post("/signup", controllers.ManagerSignup)
 		manager.Delete("/delete/:id", controllers.DeleteManager)
-		manager.Post("/logout/:id", controllers.LogOutManager)
 		manager.Patch("/booking/:id", controllers.UpdateBookingStatus) // Manager approves/rejects booking
 		manager.Get("/getallbookings", controllers.GetBooking)
 	}
+	c.Post("/logout/:id", controllers.LogOutManager)
 }
 
 // func ManagerRoutesAUTH(app *fiber.App) {

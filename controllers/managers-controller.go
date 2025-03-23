@@ -5,11 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"github.com/parshwanath-p2493/Project/database"
 	"github.com/parshwanath-p2493/Project/helpers"
@@ -85,6 +82,7 @@ func ManagerLogin(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, "Failed to generate token"))
 	}
+	ExistedManager.Updated_time = time.Now().Local()
 	filter := bson.M{"manager_id": ExistedManager.Manager_id}
 	update := bson.M{
 		"$set": bson.M{
@@ -154,25 +152,25 @@ func LogOutManager(c *fiber.Ctx) error {
 	log.Println(manager.Email)
 	log.Print(manager.First_name)
 
-	clientToken := c.Get("X-Auth-Token", "")
-	clientToken = strings.Replace(clientToken, "Bearer ", "", 1)
-	claims := &helpers.Info{}
-	_, err2 := jwt.ParseWithClaims(clientToken, claims, func(t *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("SECRET_KEY")), nil
-	})
-	if err2 != nil {
-		log.Println("Error Parsing token in LOGOUT SESSION ", err2)
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "INVALID OR EXPIRED TOKEN"})
-	} else {
-		deleted, delErr := utils.DeleteAuth(manager.Manager_id, "Managers", "manager_id")
-		if delErr != nil {
-			log.Println("Error invalidating the token Metadata")
-		}
-		if deleted == 0 {
-			log.Println("No active Session Found ")
-			//return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, delErr.Error()))
-		}
+	// clientToken := c.Get("X-Auth-Token", "")
+	// clientToken = strings.Replace(clientToken, "Bearer ", "", 1)
+	// claims := &helpers.Info{}
+	// _, err2 := jwt.ParseWithClaims(clientToken, claims, func(t *jwt.Token) (interface{}, error) {
+	// 	return []byte(os.Getenv("SECRET_KEY")), nil
+	// })
+	// if err2 != nil {
+	// 	log.Println("Error Parsing token in LOGOUT SESSION ", err2)
+	// 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "INVALID OR EXPIRED TOKEN"})
+	// } else {
+	deleted, delErr := utils.DeleteAuth(manager.Manager_id, "Managers", "manager_id")
+	if delErr != nil {
+		log.Println("Error invalidating the token Metadata")
 	}
+	if deleted == 0 {
+		log.Println("No active Session Found ")
+		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, delErr.Error()))
+	}
+
 	cookie := fiber.Cookie{
 		Name:    "jwt", // Name of the cookie
 		Value:   "",
