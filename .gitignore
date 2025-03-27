@@ -1,3 +1,5 @@
 .env
 
 et --hard f30cb40
+go.mod
+go.sum
