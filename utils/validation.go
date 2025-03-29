@@ -25,14 +25,17 @@ func Validation(c *fiber.Ctx, model interface{}) (error, int16) {
 			errormessage += fmt.Sprintf("Field %s is must required %s \n ", validationError.Field(), validationError.Tag())
 			log.Println("Validation Error:", ErrorMSg)
 			count++
-			return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-				"error": map[string]string{
-					"field":   validationError.Field(),
-					"message": validationError.Tag(),
-				},
-			}), count
+			if count > 0 {
+
+				return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+					"error": map[string]string{
+						"field":   validationError.Field(),
+						"message": validationError.Tag(),
+					},
+				}), count
+			}
 		}
 	}
-	log.Println("\n", count)
+	log.Println("\n Count is :", count)
 	return nil, count
 }

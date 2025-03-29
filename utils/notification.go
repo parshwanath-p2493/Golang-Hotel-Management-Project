@@ -26,8 +26,8 @@ func SendNotificationToManager(managerID string, guestID string, Room_number int
 				<a href="http://localhost:2493/api/approve?bookingID=1234&managerID=managerID" style="background-color: green; color: white; padding: 10px; text-decoration: none;">Approve</a>
 				&nbsp;&nbsp;
 				<a href="http://localhost:2493/api/reject?bookingID=1234&managerID=managerID" style="background-color: red; color: white; padding: 10px; text-decoration: none;">Reject</a>
-
-			</body>
+<!---use ip address of your pc--->
+				</body>
 		</html>`, message)
 
 	// Check if the manager is connected

@@ -46,9 +46,12 @@ func CreateBooking(c *fiber.Ctx) error {
 		message := fmt.Sprintf("Number of Guest exceed the room capacity.\n Room capacity is %d", roomCapacityInt)
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, message))
 	}
-	if err, count := utils.Validation(c, booking); count > 1 {
-		log.Fatal("Enter all the required Fields", err)
+	err, count := utils.Validation(c, booking)
+	if count > 0 {
+		log.Println(count)
+		//	log.Fatal("Enter all the required Fields", err)
 		return err
+		//c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, err.Error()))
 	}
 
 	result, err := collection.InsertOne(ctx, booking)
