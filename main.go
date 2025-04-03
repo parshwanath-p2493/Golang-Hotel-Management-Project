@@ -6,12 +6,23 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
 	"github.com/parshwanath-p2493/Project/database"
 
 	"github.com/parshwanath-p2493/Project/routes"
 	// Correct Swagger import
 )
 
+// @title Fiber Example API
+// @version 1.0
+// @description This is a sample swagger for Fiber
+// @termsOfService http://swagger.io/terms/
+// @contact.name API Support
+// @contact.email fiber@swagger.io
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host localhost:2493
+// @BasePath /
 func main() {
 
 	database.ConnectDB()
@@ -29,6 +40,11 @@ func main() {
 		fmt.Println("THE SERVER IS ALL SET GO ")
 		return c.JSON(&fiber.Map{"message": "SERVER RUNNING in PORT : " + PORT})
 	})
+	// r.Get("/swagger/*", swagger.HandlerDefault)
+
+	r.Get("/swagger/*", swagger.New(swagger.Config{
+		URL: "/swagger/doc.json", // The URL for the Swagger JSON file
+	}))
 
 	routes.AdminRoutes(r)
 	routes.FoodRoutes(r)

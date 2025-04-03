@@ -19,6 +19,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// SignUpAdmin godoc
+// @Summary Admin Signup
+// @Description Admin user signs up for the system
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param admin body models.Admin true "Admin Signup Details"
+// @Success 201 {object} AdminResponse "Admin created successfully"
+// @Failure 400 {string} string "Invalid request body"
+// @Failure 500 {string} string "Internal server error"
+// @Router /admin/signup [post]
 func SignUpAdmin(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -63,6 +74,19 @@ func SignUpAdmin(c *fiber.Ctx) error {
 	return c.Status(http.StatusCreated).JSON(response)
 
 }
+
+// LoginAdmin godoc
+// @Summary Admin Login
+// @Description Admin user Login up for the system
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param admin body models.Admin true "Admin Login Details"
+// @Success 201 {object} AdminResponse "Admin loggged in  successfully"
+// @Failure 400 {string} string "Invalid request body"
+// @Failure 500 {string} string "Internal server error"
+// @Router /admin/login [post]
+
 func LoginAdmin(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -108,19 +132,17 @@ func LoginAdmin(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(utils.Response(c, token, "Successfuly Logged IN "))
 }
 
-/*
-func LogOut(c *fiber.Ctx) error {
-	cookie := fiber.Cookie{
-		Name:    "jwt",
-		Value:   "",
-		Expires: time.Now().Local().Add(-time.Hour),
-	}
-	c.Cookie(&cookie)
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"message": "Logged out Successfuly",
-	})
-}
-*/
+// LogOutAdmin godoc
+// @Summary Admin Logout
+// @Description Admin user Logout up for the system
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param admin body models.Admin true "Admin logout Details"
+// @Success 201 {object} AdminResponse "Admin logut successfully"
+// @Failure 400 {string} string "Invalid request body"
+// @Failure 500 {string} string "Internal server error"
+// @Router /admin/logout [post]
 
 func LogOutAdmin(c *fiber.Ctx) error {
 	cookie := fiber.Cookie{
@@ -188,3 +210,7 @@ log.Println("Refreshed token added to the MongoDB successfully", result)
 return c.Status(http.StatusOK).JSON(utils.Response(c, token, "Successfully Logged IN"))
 
 **/
+type AdminResponse struct {
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}

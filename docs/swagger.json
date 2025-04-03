@@ -1,7 +1,68 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+      "description": "Your API documentation",
+      "title": "My API",
+      "version": "1.0.0"
     },
-    "paths": {}
-}
+    "host": "localhost:2493",
+    "basePath": "/",
+    "paths": {
+      "/admin/signup": {
+        "post": {
+          "summary": "Admin Signup",
+          "description": "Admin user signs up for the system",
+          "parameters": [
+            {
+              "name": "admin",
+              "in": "body",
+              "description": "Admin Signup Details",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Admin"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Admin created successfully",
+              "schema": {
+                "$ref": "#/definitions/AdminResponse"
+              }
+            },
+            "400": {
+              "description": "Invalid request body"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Admin": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "AdminResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+  
