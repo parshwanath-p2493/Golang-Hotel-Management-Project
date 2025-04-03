@@ -30,13 +30,6 @@ func CreateBooking(c *fiber.Ctx) error {
 		log.Println("Invalid Syntax.......")
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, err.Error()))
 	}
-	//assigning the details...
-	booking.ID = primitive.NewObjectID()
-	booking.BookingId = booking.ID.Hex()
-	booking.Status = "Pending"
-	booking.Created_time = time.Now()
-	booking.Updated_time = booking.ID.Timestamp()
-
 	roomcollection := database.OpenCollection("Rooms")
 	filter := bson.M{"room_number": booking.Room_number}
 	err := roomcollection.FindOne(ctx, filter).Decode(&room)
@@ -47,6 +40,13 @@ func CreateBooking(c *fiber.Ctx) error {
 	}
 
 	log.Println("Room Number is ", room.Room_number)
+	//assigning the details...
+	booking.ID = primitive.NewObjectID()
+	booking.BookingId = booking.ID.Hex()
+	booking.Status = "Pending"
+	booking.Created_time = time.Now()
+	booking.Updated_time = booking.ID.Timestamp()
+
 	if room.Availability_status == string(models.Room_Occupied) {
 		utils.Error(c, utils.Conflict, "Room already occupied by guest.")
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Room already occupied by guest"))

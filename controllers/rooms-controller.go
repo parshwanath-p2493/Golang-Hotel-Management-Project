@@ -175,13 +175,24 @@ func UpdateRoomStatus(id string, status models.Availability_status) error {
 func UpdateRoomStatus2(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	status := c.Query("status")
+	status := models.Room_Availabe
+
+	//status := c.Query("status")
+	id := c.Params("id")
+	collection := database.OpenCollection("Rooms")
+	updated_at := time.Now()
 	update := bson.M{
 		"$set": bson.M{
 			"availability_status": status,
 			"updated_time":        updated_at,
 		},
 	}
-	collection := database.OpenCollection("Rooms")
+	filter := bson.M{"room_id": id}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		log.Println(utils.Error(&fiber.Ctx{}, utils.InternalServerError, err.Error()))
+		return err
+	}
+	//filter:=bson.M{""}
 	return c.Status(http.StatusOK).JSON(utils.Response(c, result, "Room details updated successfully"))
 }
