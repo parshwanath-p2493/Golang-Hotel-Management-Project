@@ -172,3 +172,16 @@ func UpdateRoomStatus(id string, status models.Availability_status) error {
 	}
 	return nil
 }
+func UpdateRoomStatus2(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	status := c.Query("status")
+	update := bson.M{
+		"$set": bson.M{
+			"availability_status": status,
+			"updated_time":        updated_at,
+		},
+	}
+	collection := database.OpenCollection("Rooms")
+	return c.Status(http.StatusOK).JSON(utils.Response(c, result, "Room details updated successfully"))
+}

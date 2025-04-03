@@ -14,6 +14,7 @@ import (
 	"github.com/parshwanath-p2493/Project/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -36,6 +37,16 @@ func CreateBooking(c *fiber.Ctx) error {
 	booking.Created_time = time.Now()
 	booking.Updated_time = booking.ID.Timestamp()
 
+	roomcollection := database.OpenCollection("Rooms")
+	filter := bson.M{"room_number": booking.Room_number}
+	err := roomcollection.FindOne(ctx, filter).Decode(&room)
+	if err == mongo.ErrNilValue {
+		// 	return c.Status(http.StatusUnauthorized).JSON(utils.Error(c, utils.Unauthorized, "Invalid Password or email  "))
+		// } else if err != nil {
+		return c.Status(http.StatusNotFound).JSON(utils.Error(c, utils.NotFound, "Error fetching Room  from database  "))
+	}
+
+	log.Println("Room Number is ", room.Room_number)
 	if room.Availability_status == string(models.Room_Occupied) {
 		utils.Error(c, utils.Conflict, "Room already occupied by guest.")
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Room already occupied by guest"))
@@ -58,7 +69,7 @@ func CreateBooking(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(utils.Error(c, utils.BadRequest, "Fill The information corectly and book one room at a time "))
 	}
-	utils.SendNotificationToManager("67cca92b5532aeb8476e2334", booking.Guest_id, booking.Room_number, booking.Food_Items)
+	utils.SendNotificationToManager("67cca92b5532aeb8476e2334", booking.BookingId, booking.Guest_id, booking.Room_number, booking.Food_Items)
 	if err := UpdateRoomStatus(room.Room_id, models.Room_Occupied); err != nil { //we need to change the room availability to OCCUPIED
 		return c.Status(http.StatusInternalServerError).JSON(utils.Error(c, utils.InternalServerError, err.Error()))
 	}
