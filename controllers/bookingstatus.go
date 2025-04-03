@@ -10,7 +10,6 @@ import (
 	"github.com/parshwanath-p2493/Project/database"
 	"github.com/parshwanath-p2493/Project/utils"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Approve Booking API
@@ -21,20 +20,20 @@ func ApproveBooking(c *fiber.Ctx) error {
 	if managerID == "" || bookingID == "" {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Missing bookingID or managerID"})
 	}
-	log.Println(bookingID)
-	log.Println(managerID)
+	log.Println("booking id ", bookingID)
+	log.Println("manager id ", managerID)
 	// Find and update booking status
 	collection := database.OpenCollection("Bookings")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	bookingObjectID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Invalid booking ID"})
-	}
+	// BookingId, err := primitive.ObjectIDFromHex(bookingID)
+	// if err != nil {
+	// 	return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Invalid booking ID"})
+	// }
 
 	update := bson.M{"$set": bson.M{"status": "Confirmed"}}
-	_, err = collection.UpdateOne(ctx, bson.M{"_id": bookingObjectID}, update)
+	_, err := collection.UpdateOne(ctx, bson.M{"bookingid": bookingID}, update)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to approve booking"})
 	}
@@ -60,13 +59,8 @@ func RejectBooking(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	bookingObjectID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Invalid booking ID"})
-	}
-
 	update := bson.M{"$set": bson.M{"status": "Rejected"}}
-	_, err = collection.UpdateOne(ctx, bson.M{"_id": bookingObjectID}, update)
+	_, err := collection.UpdateOne(ctx, bson.M{"bookingid": bookingID}, update)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to reject booking"})
 	}

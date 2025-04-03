@@ -178,7 +178,7 @@ func UpdateRoomStatus2(c *fiber.Ctx) error {
 	status := models.Room_Availabe
 
 	//status := c.Query("status")
-	id := c.Params("id")
+	id := c.Query("id")
 	collection := database.OpenCollection("Rooms")
 	updated_at := time.Now()
 	update := bson.M{

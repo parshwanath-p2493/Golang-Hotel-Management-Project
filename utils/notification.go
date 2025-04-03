@@ -13,7 +13,7 @@ import (
 // var managerConnections = make(map[string]map[*websocket.Conn]bool) //can have multiple connections (e.g., for a manager logged in on multiple devices).
 var managerConnections = make(map[string]*websocket.Conn)
 
-func SendNotificationToManager(managerID string, bookingID string, guestID string, Room_number int32, foodItems []string) {
+func SendNotificationToManager(managerID string, bookingID string, roomId string, guestID string, Room_number int32, foodItems []string) {
 
 	message := fmt.Sprintf("🔔 Notification: Guest %s has booked Room %v with food items %v\n", guestID, Room_number, foodItems)
 
@@ -26,9 +26,12 @@ func SendNotificationToManager(managerID string, bookingID string, guestID strin
 				<a href="http://localhost:2493/api/approve?bookingID=%s&managerID=%s" style="background-color: green; color: white; padding: 10px; text-decoration: none;">Approve</a>
 				&nbsp;&nbsp;
 				<a href="http://localhost:2493/api/reject?bookingID=%s&managerID=%s" style="background-color: red; color: white; padding: 10px; text-decoration: none;">Reject</a>
-<!---use ip address of your pc--->
+				&nbsp;&nbsp;
+				<a href="http://localhost:2493/manager/updateroom?room_id=%s" style="background-color: blue; color: white; padding: 10px; text-decoration: none;">UPDATE ROOM</a>
+
+				<!---use ip address of your pc--->
 				</body>
-		</html>`, message, bookingID, managerID, bookingID, managerID)
+		</html>`, message, bookingID, managerID, bookingID, managerID, roomId)
 
 	// Check if the manager is connected
 	if connections, exists := managerConnections[managerID]; exists {
