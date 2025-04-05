@@ -4,17 +4,144 @@ package docs
 import "github.com/swaggo/swag"
 
 const docTemplate = `{
-    "schemes": {{ marshal .Schemes }},
+    "schemes": ["http"],
     "swagger": "2.0",
     "info": {
-        "description": "{{escape .Description}}",
-        "title": "{{.Title}}",
+        "description": "This is a sample API for managing Admin users.",
+        "title": "Admin API",
         "contact": {},
-        "version": "{{.Version}}"
+        "version": "1.0"
     },
-    "host": "{{.Host}}",
-    "basePath": "{{.BasePath}}",
-    "paths": {}
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/admin/signup": {
+            "post": {
+                "tags": ["admin"],
+                "summary": "Admin Signup",
+                "description": "Admin user signs up for the system",
+                "parameters": [
+                    {
+                        "name": "admin",
+                        "in": "body",
+                        "description": "Admin Signup Details",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Admin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Admin created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/AdminResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/admin/login": {
+            "post": {
+                "tags": ["admin"],
+                "summary": "Admin Login",
+                "description": "Admin user logs in to the system",
+                "parameters": [
+                    {
+                        "name": "admin",
+                        "in": "body",
+                        "description": "Admin Login Details",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Admin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Admin logged in successfully",
+                        "schema": {
+                            "$ref": "#/definitions/AdminResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/admin/logout": {
+            "post": {
+                "tags": ["admin"],
+                "summary": "Admin Logout",
+                "description": "Admin user logs out from the system",
+                "parameters": [
+                    {
+                        "name": "admin",
+                        "in": "body",
+                        "description": "Admin logout Details",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Admin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Admin logged out successfully",
+                        "schema": {
+                            "$ref": "#/definitions/AdminResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Admin": {
+            "type": "object",
+            "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "AdminResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object"
+                }
+            }
+        }
+    }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
