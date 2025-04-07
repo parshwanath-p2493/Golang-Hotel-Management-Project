@@ -221,6 +221,81 @@ const docTemplate = `{
             }
         }
     },
+     "/approve": {
+            "get": {
+                "tags": ["Bookings"],
+                "summary": "Approve a booking",
+                "description": "Approve a booking by updating the status to 'Confirmed'",
+                "parameters": [
+                    {
+                        "name": "managerID",
+                        "in": "query",
+                        "description": "Manager's ID for validation",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "bookingID",
+                        "in": "query",
+                        "description": "Booking ID to approve",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking approved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/BookingStatusResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing bookingID or managerID"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/reject": {
+            "get": {
+                "tags": ["Bookings"],
+                "summary": "Reject a booking",
+                "description": "Reject a booking by updating the status to 'Rejected'",
+                "parameters": [
+                    {
+                        "name": "managerID",
+                        "in": "query",
+                        "description": "Manager's ID for validation",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "bookingID",
+                        "in": "query",
+                        "description": "Booking ID to reject",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking rejected successfully",
+                        "schema": {
+                            "$ref": "#/definitions/BookingStatusResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing bookingID or managerID"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        }
+    },
     "definitions": {
         "Admin": {
             "type": "object",
