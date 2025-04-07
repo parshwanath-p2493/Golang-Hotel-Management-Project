@@ -112,6 +112,115 @@ const docTemplate = `{
             }
         }
     },
+     "/bookings": {
+            "post": {
+                "tags": ["Bookings"],
+                "summary": "Create a new booking",
+                "description": "Create a new booking for a room",
+                "parameters": [
+                    {
+                        "name": "booking",
+                        "in": "body",
+                        "description": "Booking details to create a new booking",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Booking"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/BookingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid booking data"
+                    },
+                    "404": {
+                        "description": "Room not found"
+                    },
+                    "409": {
+                        "description": "Room already occupied"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/bookings": {
+            "get": {
+                "tags": ["Bookings"],
+                "summary": "Get all bookings",
+                "description": "Retrieve all bookings with optional sorting",
+                "parameters": [
+                    {
+                        "name": "sortbytime",
+                        "in": "query",
+                        "description": "Sort bookings by time (asc/desc)",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bookings retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/BookingListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed to retrieve bookings"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/bookings/{id}/status": {
+            "put": {
+                "tags": ["Bookings"],
+                "summary": "Update booking status",
+                "description": "Update the status of a booking (approved/rejected)",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Booking ID",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Booking status (approved/rejected)",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking status updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/BookingStatusResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    },
+                    "404": {
+                        "description": "Booking not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        }
+    },
     "definitions": {
         "Admin": {
             "type": "object",
@@ -138,6 +247,79 @@ const docTemplate = `{
                 },
                 "data": {
                     "type": "object"
+                }
+            }
+        }
+    },
+    "Booking": {
+            "type": "object",
+            "properties": {
+                "booking_id": {
+                    "type": "string"
+                },
+                "guest_id": {
+                    "type": "string"
+                },
+                "room_number": {
+                    "type": "string"
+                },
+                "number_of_guests": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "food_items": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                },
+                "created_time": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updated_time": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "BookingResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "data": {
+                    "$ref": "#/definitions/Booking"
+                }
+            }
+        },
+        "BookingListResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Booking"
+                    }
+                }
+            }
+        },
+        "BookingStatusResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "string",
+                    "example": "Booking status updated successfully"
                 }
             }
         }
