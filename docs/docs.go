@@ -296,6 +296,178 @@ const docTemplate = `{
             }
         }
     },
+     "/adminfood/addfood": {
+            "post": {
+                "tags": ["Food"],
+                "summary": "Add a new food item",
+                "description": "Admin adds a new food item to the system",
+                "parameters": [
+                    {
+                        "name": "food",
+                        "in": "body",
+                        "description": "Food details to create a new food item",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Food"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Food item added successfully",
+                        "schema": {
+                            "$ref": "#/definitions/FoodResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid food data"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/adminfood/getall": {
+            "get": {
+                "tags": ["Food"],
+                "summary": "Get all food items",
+                "description": "Retrieve all food items with optional sorting and filtering",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Filter food items by category",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "sortByPrice",
+                        "in": "query",
+                        "description": "Sort food items by price (asc/desc)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "type": "integer",
+                        "default": 1
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Limit the number of food items returned",
+                        "required": false,
+                        "type": "integer",
+                        "default": 5
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Food items retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/FoodListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed to retrieve food items"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/adminfood/filter/{category_name}/{food_name}": {
+            "patch": {
+                "tags": ["Food"],
+                "summary": "Change food item details",
+                "description": "Admin updates the details of an existing food item",
+                "parameters": [
+                    {
+                        "name": "category_name",
+                        "in": "path",
+                        "description": "Food category name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "food_name",
+                        "in": "path",
+                        "description": "Food item name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "food",
+                        "in": "body",
+                        "description": "Food details to update the food item",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Food"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Food item updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/FoodResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid food data"
+                    },
+                    "404": {
+                        "description": "Food item not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/adminfood/delete/{category_name}/{food_name}": {
+            "delete": {
+                "tags": ["Food"],
+                "summary": "Delete a food item",
+                "description": "Admin deletes an existing food item from the system",
+                "parameters": [
+                    {
+                        "name": "category_name",
+                        "in": "path",
+                        "description": "Food category name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "food_name",
+                        "in": "path",
+                        "description": "Food item name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Food item deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/FoodResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Food item not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        }
+    },
     "definitions": {
         "Admin": {
             "type": "object",
@@ -395,6 +567,65 @@ const docTemplate = `{
                 "data": {
                     "type": "string",
                     "example": "Booking status updated successfully"
+                }
+            }
+        }
+    },
+     "Food": {
+            "type": "object",
+            "properties": {
+                "food_id": {
+                    "type": "string"
+                },
+                "item_name": {
+                    "type": "string"
+                },
+                "category_name": {
+                    "type": "string"
+                },
+                "vegornonveg": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number",
+                    "format": "float"
+                },
+                "created_time": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updated_time": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "flag": {
+                    "type": "string",
+                    "enum": ["green", "red"]
+                }
+            }
+        },
+        "FoodResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "data": {
+                    "$ref": "#/definitions/Food"
+                }
+            }
+        },
+        "FoodListResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Food"
+                    }
                 }
             }
         }
