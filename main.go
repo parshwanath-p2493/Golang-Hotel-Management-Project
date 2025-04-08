@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
 	"github.com/parshwanath-p2493/Project/database"
-
+	_ "github.com/parshwanath-p2493/Project/docs"
 	"github.com/parshwanath-p2493/Project/routes"
 	// Correct Swagger import
 )
@@ -40,10 +40,11 @@ func main() {
 		fmt.Println("THE SERVER IS ALL SET GO ")
 		return c.JSON(&fiber.Map{"message": "SERVER RUNNING in PORT : " + PORT})
 	})
-	// r.Get("/swagger/*", swagger.HandlerDefault)
+	//r.Get("/swagger/*", swagger.HandlerDefault)
 
+	r.Static("/docs", "./docs")
 	r.Get("/swagger/*", swagger.New(swagger.Config{
-		URL: "/swagger/doc.json", // The URL for the Swagger JSON file
+		URL: "/docs/swagger.json", // Match the actual path where it was generated
 	}))
 
 	routes.AdminRoutes(r)
