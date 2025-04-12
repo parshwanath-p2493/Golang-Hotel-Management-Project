@@ -1,16 +1,18 @@
 {
     "swagger": "2.0",
     "info": {
-      "description": "Your API documentation",
-      "title": "My API",
-      "version": "1.0.0"
+        "description": "Your API documentation",
+        "title": "My API",
+        "version": "1.0.0"
     },
     "host": "localhost:2493",
     "basePath": "/",
     "paths": {
         "/admin/signup": {
             "post": {
-                "tags": ["admin"],
+                "tags": [
+                    "admin"
+                ],
                 "summary": "Admin Signup",
                 "description": "Admin user signs up for the system",
                 "parameters": [
@@ -42,7 +44,9 @@
         },
         "/admin/login": {
             "post": {
-                "tags": ["admin"],
+                "tags": [
+                    "admin"
+                ],
                 "summary": "Admin Login",
                 "description": "Admin user logs in to the system",
                 "parameters": [
@@ -74,7 +78,9 @@
         },
         "/admin/logout": {
             "post": {
-                "tags": ["admin"],
+                "tags": [
+                    "admin"
+                ],
                 "summary": "Admin Logout",
                 "description": "Admin user logs out from the system",
                 "parameters": [
@@ -104,9 +110,11 @@
                 }
             }
         },
-     "/guest/bookhotel": {
+        "/guest/bookhotel": {
             "post": {
-                "tags": ["Bookings"],
+                "tags": [
+                    "Bookings"
+                ],
                 "summary": "Create a new booking",
                 "description": "Create a new booking for a room",
                 "parameters": [
@@ -142,9 +150,11 @@
                 }
             }
         },
-        "manager/getallbookings": {
+        "/manager/getallbookings": {
             "get": {
-                "tags": ["Bookings"],
+                "tags": [
+                    "Bookings"
+                ],
                 "summary": "Get all bookings",
                 "description": "Retrieve all bookings with optional sorting",
                 "parameters": [
@@ -174,7 +184,9 @@
         },
         "/bookings/{id}/status": {
             "put": {
-                "tags": ["Bookings"],
+                "tags": [
+                    "Bookings"
+                ],
                 "summary": "Update booking status",
                 "description": "Update the status of a booking (approved/rejected)",
                 "parameters": [
@@ -211,12 +223,12 @@
                     }
                 }
             }
-        }
-    },
-  
-     "api/approve": {
+        },
+        "/api/approve": {
             "get": {
-                "tags": ["Bookings"],
+                "tags": [
+                    "Bookings"
+                ],
                 "summary": "Approve a booking",
                 "description": "Approve a booking by updating the status to 'Confirmed'",
                 "parameters": [
@@ -251,9 +263,11 @@
                 }
             }
         },
-        "api/reject": {
+        "/api/reject": {
             "get": {
-                "tags": ["Bookings"],
+                "tags": [
+                    "Bookings"
+                ],
                 "summary": "Reject a booking",
                 "description": "Reject a booking by updating the status to 'Rejected'",
                 "parameters": [
@@ -287,148 +301,155 @@
                     }
                 }
             }
-        
-          },
-          "/guest/signup": {
-      "post": {
-        "tags": ["guest"],
-        "summary": "Guest Signup",
-        "description": "Register a new guest",
-        "parameters": [
-          {
-            "name": "guest",
-            "in": "body",
-            "description": "Guest Signup Details",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Guest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Guest created successfully",
-            "schema": {
-              "$ref": "#/definitions/GuestResponse"
-            }
-          },
-          "400": {
-            "description": "Invalid request body"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "/guest/login": {
-      "post": {
-        "tags": ["guest"],
-        "summary": "Guest Login",
-        "description": "Authenticate guest user",
-        "parameters": [
-          {
-            "name": "guest",
-            "in": "body",
-            "description": "Guest login credentials",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Guest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Guest logged in successfully",
-            "schema": {
-              "$ref": "#/definitions/GuestResponse"
-            }
-          },
-          "401": {
-            "description": "Unauthorized - incorrect credentials"
-          },
-          "404": {
-            "description": "Guest not found"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "/guest/logout": {
-      "post": {
-        "tags": ["guest"],
-        "summary": "Guest Logout",
-        "description": "Logs out the guest by invalidating the session token",
-        "responses": {
-          "200": {
-            "description": "Guest logged out successfully",
-            "schema": {
-              "$ref": "#/definitions/GuestLogoutResponse"
-            }
-          },
-          "400": {
-            "description": "Invalid or missing token"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
-    "/guest/getallguests": {
-      "get": {
-        "tags": ["guest"],
-        "summary": "Get All Guests",
-        "description": "Retrieve all guest users from the database",
-        "responses": {
-          "200": {
-            "description": "List of guests retrieved successfully",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Guest"
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "definitions": {
-        "Admin": {
-            "type": "object",
-            "properties": {
-                "first_name": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
+        },
+        "/guest/signup": {
+            "post": {
+                "tags": [
+                    "guest"
+                ],
+                "summary": "Guest Signup",
+                "description": "Register a new guest",
+                "parameters": [
+                    {
+                        "name": "guest",
+                        "in": "body",
+                        "description": "Guest Signup Details",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Guest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Guest created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/GuestResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
                 }
             }
         },
-        "AdminResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "object"
+        "/guest/login": {
+            "post": {
+                "tags": [
+                    "guest"
+                ],
+                "summary": "Guest Login",
+                "description": "Authenticate guest user",
+                "parameters": [
+                    {
+                        "name": "guest",
+                        "in": "body",
+                        "description": "Guest login credentials",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Guest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Guest logged in successfully",
+                        "schema": {
+                            "$ref": "#/definitions/GuestResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - incorrect credentials"
+                    },
+                    "404": {
+                        "description": "Guest not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
                 }
             }
-        }
-    },
-    "Booking": {
+        },
+        "/guest/logout": {
+            "post": {
+                "tags": [
+                    "guest"
+                ],
+                "summary": "Guest Logout",
+                "description": "Logs out the guest by invalidating the session token",
+                "responses": {
+                    "200": {
+                        "description": "Guest logged out successfully",
+                        "schema": {
+                            "$ref": "#/definitions/GuestLogoutResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing token"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/guest/getallguests": {
+            "get": {
+                "tags": [
+                    "guest"
+                ],
+                "summary": "Get All Guests",
+                "description": "Retrieve all guest users from the database",
+                "responses": {
+                    "200": {
+                        "description": "List of guests retrieved successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Guest"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "definitions": {
+            "Admin": {
+                "type": "object",
+                "properties": {
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "role": {
+                        "type": "string"
+                    }
+                }
+            },
+            "AdminResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "data": {
+                        "type": "object"
+                    }
+                }
+            }
+        },
+        "Booking": {
             "type": "object",
             "properties": {
                 "booking_id": {
@@ -500,7 +521,7 @@
                 }
             }
         },
-     "Food": {
+        "Food": {
             "type": "object",
             "properties": {
                 "food_id": {
@@ -529,7 +550,10 @@
                 },
                 "flag": {
                     "type": "string",
-                    "enum": ["green", "red"]
+                    "enum": [
+                        "green",
+                        "red"
+                    ]
                 }
             }
         },
@@ -560,39 +584,44 @@
         },
         "Guest": {
             "type": "object",
-            "required": ["email", "password", "first_name"],
+            "required": [
+                "email",
+                "password",
+                "first_name"
+            ],
             "properties": {
-              "first_name": {
-                "type": "string"
-              },
-              "last_name": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string"
-              },
-              "password": {
-                "type": "string"
-              }
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
             }
-          },
-          "GuestResponse": {
+        },
+        "GuestResponse": {
             "type": "object",
             "properties": {
-              "message": {
-                "type": "string"
-              },
-              "data": {
-                "$ref": "#/definitions/Guest"
-              }
+                "message": {
+                    "type": "string"
+                },
+                "data": {
+                    "$ref": "#/definitions/Guest"
+                }
             }
-          },
-          "GuestLogoutResponse": {
+        },
+        "GuestLogoutResponse": {
             "type": "object",
             "properties": {
-              "message": {
-                "type": "string"
-              }
+                "message": {
+                    "type": "string"
+                }
             }
-          }
+        }
     }
+}
