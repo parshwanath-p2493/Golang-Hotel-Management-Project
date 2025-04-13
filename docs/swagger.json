@@ -419,6 +419,171 @@
                 }
             }
         },
+
+        "/adminfood/addfood": {
+  "post": {
+    "tags": ["food"],
+    "summary": "Add new food item (Admin only)",
+    "description": "Allows an admin to add a new food item to the system.",
+    "parameters": [
+      {
+        "in": "body",
+        "name": "food",
+        "description": "Food item details",
+        "required": true,
+        "schema": {
+          "$ref": "#/definitions/Food"
+        }
+      }
+    ],
+    "responses": {
+      "201": {
+        "description": "Food item created successfully"
+      },
+      "400": {
+        "description": "Invalid request body"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+},
+"/adminfood/getall": {
+  "get": {
+    "tags": ["food"],
+    "summary": "Retrieve food items (Admin only)",
+    "description": "Fetches all food items. Supports filtering by category, price, and sorting by price.",
+    "parameters": [
+      {
+        "name": "category",
+        "in": "query",
+        "type": "string",
+        "description": "Filter by category"
+      },
+      {
+        "name": "sortByPrice",
+        "in": "query",
+        "type": "string",
+        "enum": ["asc", "desc"],
+        "description": "Sort by price ascending or descending"
+      },
+      {
+        "name": "pricein",
+        "in": "query",
+        "type": "string",
+        "description": "Comma-separated price values to include"
+      },
+      {
+        "name": "pricenin",
+        "in": "query",
+        "type": "string",
+        "description": "Comma-separated price values to exclude"
+      },
+      {
+        "name": "page",
+        "in": "query",
+        "type": "integer",
+        "description": "Page number for pagination"
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "type": "integer",
+        "description": "Limit of items per page"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "List of food items",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Food"
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+},
+"/adminfood/filter/{category_name}/{food_name}": {
+  "patch": {
+    "tags": ["food"],
+    "summary": "Update a food item (Admin only)",
+    "description": "Allows admin to update food item details by category and name.",
+    "parameters": [
+      {
+        "name": "category_name",
+        "in": "path",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "name": "food_name",
+        "in": "path",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "in": "body",
+        "name": "food",
+        "required": true,
+        "schema": {
+          "$ref": "#/definitions/Food"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Food item updated successfully"
+      },
+      "400": {
+        "description": "Invalid request body"
+      },
+      "404": {
+        "description": "Food item not found"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+},
+"/adminfood/delete/{category_name}/{food_name}": {
+  "delete": {
+    "tags": ["food"],
+    "summary": "Delete a food item (Admin only)",
+    "description": "Deletes a food item identified by category and name.",
+    "parameters": [
+      {
+        "name": "category_name",
+        "in": "path",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "name": "food_name",
+        "in": "path",
+        "required": true,
+        "type": "string"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Food item deleted successfully"
+      },
+      "404": {
+        "description": "Food item not found"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+},
         "definitions": {
             "Admin": {
                 "type": "object",
