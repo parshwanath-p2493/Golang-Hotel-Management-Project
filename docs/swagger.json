@@ -419,171 +419,395 @@
                 }
             }
         },
-
         "/adminfood/addfood": {
-  "post": {
-    "tags": ["food"],
-    "summary": "Add new food item (Admin only)",
-    "description": "Allows an admin to add a new food item to the system.",
-    "parameters": [
-      {
-        "in": "body",
-        "name": "food",
-        "description": "Food item details",
-        "required": true,
-        "schema": {
-          "$ref": "#/definitions/Food"
-        }
-      }
-    ],
-    "responses": {
-      "201": {
-        "description": "Food item created successfully"
-      },
-      "400": {
-        "description": "Invalid request body"
-      },
-      "500": {
-        "description": "Internal server error"
-      }
-    }
-  }
-},
-"/adminfood/getall": {
-  "get": {
-    "tags": ["food"],
-    "summary": "Retrieve food items (Admin only)",
-    "description": "Fetches all food items. Supports filtering by category, price, and sorting by price.",
-    "parameters": [
-      {
-        "name": "category",
-        "in": "query",
-        "type": "string",
-        "description": "Filter by category"
-      },
-      {
-        "name": "sortByPrice",
-        "in": "query",
-        "type": "string",
-        "enum": ["asc", "desc"],
-        "description": "Sort by price ascending or descending"
-      },
-      {
-        "name": "pricein",
-        "in": "query",
-        "type": "string",
-        "description": "Comma-separated price values to include"
-      },
-      {
-        "name": "pricenin",
-        "in": "query",
-        "type": "string",
-        "description": "Comma-separated price values to exclude"
-      },
-      {
-        "name": "page",
-        "in": "query",
-        "type": "integer",
-        "description": "Page number for pagination"
-      },
-      {
-        "name": "limit",
-        "in": "query",
-        "type": "integer",
-        "description": "Limit of items per page"
-      }
-    ],
-    "responses": {
-      "200": {
-        "description": "List of food items",
-        "schema": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Food"
-          }
-        }
-      },
-      "500": {
-        "description": "Internal server error"
-      }
-    }
-  }
-},
-"/adminfood/filter/{category_name}/{food_name}": {
-  "patch": {
-    "tags": ["food"],
-    "summary": "Update a food item (Admin only)",
-    "description": "Allows admin to update food item details by category and name.",
-    "parameters": [
-      {
-        "name": "category_name",
-        "in": "path",
-        "required": true,
-        "type": "string"
-      },
-      {
-        "name": "food_name",
-        "in": "path",
-        "required": true,
-        "type": "string"
-      },
-      {
-        "in": "body",
-        "name": "food",
-        "required": true,
-        "schema": {
-          "$ref": "#/definitions/Food"
-        }
-      }
-    ],
-    "responses": {
-      "200": {
-        "description": "Food item updated successfully"
-      },
-      "400": {
-        "description": "Invalid request body"
-      },
-      "404": {
-        "description": "Food item not found"
-      },
-      "500": {
-        "description": "Internal server error"
-      }
-    }
-  }
-},
-"/adminfood/delete/{category_name}/{food_name}": {
-  "delete": {
-    "tags": ["food"],
-    "summary": "Delete a food item (Admin only)",
-    "description": "Deletes a food item identified by category and name.",
-    "parameters": [
-      {
-        "name": "category_name",
-        "in": "path",
-        "required": true,
-        "type": "string"
-      },
-      {
-        "name": "food_name",
-        "in": "path",
-        "required": true,
-        "type": "string"
-      }
-    ],
-    "responses": {
-      "200": {
-        "description": "Food item deleted successfully"
-      },
-      "404": {
-        "description": "Food item not found"
-      },
-      "500": {
-        "description": "Internal server error"
-      }
-    }
-  }
-},
+            "post": {
+                "tags": [
+                    "food"
+                ],
+                "summary": "Add new food item (Admin only)",
+                "description": "Allows an admin to add a new food item to the system.",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "food",
+                        "description": "Food item details",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Food"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Food item created successfully"
+                    },
+                    "400": {
+                        "description": "Invalid request body"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/adminfood/getall": {
+            "get": {
+                "tags": [
+                    "food"
+                ],
+                "summary": "Retrieve food items (Admin only)",
+                "description": "Fetches all food items. Supports filtering by category, price, and sorting by price.",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by category"
+                    },
+                    {
+                        "name": "sortByPrice",
+                        "in": "query",
+                        "type": "string",
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "description": "Sort by price ascending or descending"
+                    },
+                    {
+                        "name": "pricein",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Comma-separated price values to include"
+                    },
+                    {
+                        "name": "pricenin",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Comma-separated price values to exclude"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Page number for pagination"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Limit of items per page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of food items",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Food"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/adminfood/filter/{category_name}/{food_name}": {
+            "patch": {
+                "tags": [
+                    "food"
+                ],
+                "summary": "Update a food item (Admin only)",
+                "description": "Allows admin to update food item details by category and name.",
+                "parameters": [
+                    {
+                        "name": "category_name",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "food_name",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "food",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Food"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Food item updated successfully"
+                    },
+                    "400": {
+                        "description": "Invalid request body"
+                    },
+                    "404": {
+                        "description": "Food item not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/adminfood/delete/{category_name}/{food_name}": {
+            "delete": {
+                "tags": [
+                    "food"
+                ],
+                "summary": "Delete a food item (Admin only)",
+                "description": "Deletes a food item identified by category and name.",
+                "parameters": [
+                    {
+                        "name": "category_name",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "food_name",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Food item deleted successfully"
+                    },
+                    "404": {
+                        "description": "Food item not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/rooms/all": {
+            "get": {
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get all rooms",
+                "description": "Retrieve all rooms available in the system.",
+                "responses": {
+                    "200": {
+                        "description": "List of rooms retrieved successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Room"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/rooms/types": {
+            "get": {
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Filter rooms by capacity, type, and price",
+                "description": "Filter and retrieve rooms based on capacity, room type, and price range.",
+                "parameters": [
+                    {
+                        "name": "capacity",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter rooms by capacity"
+                    },
+                    {
+                        "name": "room_type",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter rooms by type"
+                    },
+                    {
+                        "name": "sortByPrice",
+                        "in": "query",
+                        "type": "string",
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "description": "Sort rooms by price (ascending or descending)"
+                    },
+                    {
+                        "name": "min_price",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Minimum price for filtering"
+                    },
+                    {
+                        "name": "max-price",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Maximum price for filtering"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Page number for pagination"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Limit of rooms per page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of rooms based on the filters",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Room"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/adminrooms/addroom": {
+            "post": {
+                "tags": [
+                    "admin-rooms"
+                ],
+                "summary": "Add a new room (Admin only)",
+                "description": "Allows an admin to add a new room to the system.",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "room",
+                        "description": "Room details",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Room"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Room added successfully"
+                    },
+                    "400": {
+                        "description": "Invalid request body"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/adminrooms/delete/{room_number}": {
+            "delete": {
+                "tags": [
+                    "admin-rooms"
+                ],
+                "summary": "Delete a room (Admin only)",
+                "description": "Allows an admin to delete a room by its room number.",
+                "parameters": [
+                    {
+                        "name": "room_number",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Room number to be deleted"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room deleted successfully"
+                    },
+                    "404": {
+                        "description": "Room not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/managerrooms/addroom": {
+            "post": {
+                "tags": [
+                    "manager-rooms"
+                ],
+                "summary": "Add a new room (Manager only)",
+                "description": "Allows a manager to add a new room to the system.",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "room",
+                        "description": "Room details",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Room"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Room added successfully"
+                    },
+                    "400": {
+                        "description": "Invalid request body"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/managerrooms/delete/{room_number}": {
+            "delete": {
+                "tags": [
+                    "manager-rooms"
+                ],
+                "summary": "Delete a room (Manager only)",
+                "description": "Allows a manager to delete a room by its room number.",
+                "parameters": [
+                    {
+                        "name": "room_number",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Room number to be deleted"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room deleted successfully"
+                    },
+                    "404": {
+                        "description": "Room not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
         "definitions": {
             "Admin": {
                 "type": "object",
@@ -785,6 +1009,51 @@
             "properties": {
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "Room": {
+            "type": "object",
+            "properties": {
+                "room_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the room"
+                },
+                "room_number": {
+                    "type": "integer",
+                    "description": "The room number"
+                },
+                "room_type": {
+                    "type": "string",
+                    "description": "Type of the room (e.g., Single, Double)"
+                },
+                "capacity": {
+                    "type": "integer",
+                    "description": "Maximum number of people the room can accommodate"
+                },
+                "price": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Price of the room per night"
+                },
+                "availability_status": {
+                    "type": "string",
+                    "enum": [
+                        "Available",
+                        "Booked",
+                        "Unavailable"
+                    ],
+                    "description": "Availability status of the room"
+                },
+                "created_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Timestamp when the room was created"
+                },
+                "updated_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Timestamp when the room was last updated"
                 }
             }
         }
